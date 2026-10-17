@@ -6,7 +6,7 @@ Tanggal pembaruan: 17 Oktober 2026
 
 - Path lokal: `D:\Project\hotel_new`
 - Remote: `https://github.com/mryunkaka/hotel_bome.git`
-- Branch setup: `chore/spec-kit-workflow`, berasal dari `origin/main`; perubahan workflow sudah di-push.
+- Branch setup: `chore/spec-kit-workflow`, berasal dari `origin/main`; dokumen, skills, dan adapter Bash sudah di-push dan sinkron dengan VPS.
 - `main` tidak diubah.
 - Spec Kit CLI 1.2.1; integrasi Codex aktif dan berstatus `ok`; 10 skill Codex berada di `.agents/skills/`.
 - Artefak bersama di `.specify/`: template, constitution, dan skrip PowerShell serta Bash.
@@ -22,7 +22,7 @@ Tanggal pembaruan: 17 Oktober 2026
 
 ## Posisi pekerjaan
 
-- Setup workflow sudah di-commit dan di-push pada branch `chore/spec-kit-workflow` (`aee320f`, `97b7832`).
+- Setup Codex, adapter Bash Hermes, serta dokumen handoff sudah di-commit dan di-push bertahap pada branch `chore/spec-kit-workflow`; verifikasi tip branch dengan Git sebelum sesi kerja.
 - Belum ada fitur/spec PMS aktif. Hermes tidak boleh mulai mengubah aplikasi sampai Codex menyiapkan satu slice dengan spec, plan, tasks, acceptance, dan handoff.
 - Pemeriksaan workflow: `specify check` dan status integrasi lokal Codex lulus; status integrasi VPS lulus; `bash -n .specify/scripts/bash/*.sh` lulus; uji read-only Hermes lulus.
 - Test aplikasi tidak dijalankan karena perubahan tugas ini hanya menyiapkan workflow.
