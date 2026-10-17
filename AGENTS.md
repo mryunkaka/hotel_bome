@@ -1,5 +1,9 @@
 # Instruksi kerja project Hotel PMS
 
+## Mandat terbaru 2026-10-18
+
+Untuk branch `work/hermes-full-build`, baca `docs/HERMES_AUTONOMOUS_BUILD.md`. Pemilik mendelegasikan perencanaan, riset keputusan sementara, implementasi dan pengujian berkelanjutan kepada Hermes. Mandat tersebut menggantikan batas DISC-001 saja, kewajiban menunggu Codex per task, dan gate keputusan rutin pada dokumen lama. Keputusan eksternal/legal/hardware tetap dilaporkan sesuai bukti; jangan mengarang persetujuan atau hasil. Semua prinsip keamanan/data/lisensi tetap berlaku.
+
 Dokumen ini adalah pintu masuk ringkas untuk Codex dan agent lain. Hermes harus membaca dokumen ini secara eksplisit setiap sesi baru karena AGENTS.md belum tentu dimuat otomatis oleh runtime Hermes.
 
 ## Mulai setiap sesi

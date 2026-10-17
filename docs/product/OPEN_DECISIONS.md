@@ -1,5 +1,9 @@
 # Keputusan Terbuka
 
+## Delegasi riset dan keputusan sementara 2026-10-18
+
+Pemilik mengizinkan Hermes melanjutkan pembangunan tanpa pertanyaan rutin: gunakan sumber primer dan kasus serupa, catat rekomendasi/default configurable dalam `docs/product/DECISION_LOG.md` beserta provenance. D-004..D-010 tetap belum menjadi fakta legal/SOP/vendor yang dikonfirmasi; sementara itu boleh membangun perilaku konservatif yang bisa dikonfigurasi, adapter disabled dan contract tests. Jangan memalsukan hak lisensi, compliance, credentials, perangkat atau hasil Windows. Lihat mandat lengkap `docs/HERMES_AUTONOMOUS_BUILD.md`.
+
 Catatan ini memisahkan fakta, asumsi sementara, dan keputusan pemilik. Keputusan baru hanya dianggap sah setelah jawaban pemilik atau persetujuan pihak berwenang tercatat di sini beserta tanggal dan dampaknya.
 
 ## Konfirmasi pemilik yang memblokir rancangan dasar

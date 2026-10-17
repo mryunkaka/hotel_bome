@@ -1,5 +1,9 @@
 # Workflow AI: Codex lokal ke Hermes VPS lalu kembali ke Codex
 
+## Pembaruan mandat 2026-10-18
+
+Pada branch `work/hermes-full-build`, `docs/HERMES_AUTONOMOUS_BUILD.md` berlaku untuk eksekusi otonom. Pemilik mengizinkan Hermes menyusun/menganalisis task, meriset dan mencatat keputusan sementara, mengimplementasikan dan menguji tanpa menunggu Codex di setiap slice. Kriteria bukti, keamanan, isolasi, integritas keuangan dan lisensi tetap berlaku. Gate yang benar-benar memerlukan sumber eksternal dicatat dan tidak menghentikan pekerjaan independen.
+
 ## Tujuan
 
 Workflow ini membawa pekerjaan melalui requirement yang dapat ditinjau, implementasi terbatas, pengujian nyata, dan review. File ini bersama docs/AI_WORKFLOW_STATE.md menjadi catatan lintas sesi. Setiap sesi baru wajib membaca keduanya; jangan bergantung pada chat history atau ingatan model.

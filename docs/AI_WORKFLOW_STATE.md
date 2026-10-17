@@ -1,5 +1,14 @@
 # Workflow state and Hermes handoff
 
+## Active handoff override — 2026-10-18
+
+- Owner requested autonomous planning/research/implementation/testing and periodic pushes; see `docs/HERMES_AUTONOMOUS_BUILD.md` for the complete execution mandate. This supersedes the baseline-only handoff below on the integration branch.
+- Integration branch: `work/hermes-full-build`, starting at `ca295269766b482df89b78358a3c154a3f159c3d` plus the autonomous mandate commit. Use the actual current remote tip and record every verified checkpoint; do not require HEAD to stay at the starting SHA.
+- Checkout remains `/workspace/hotel_bome_workflow`. Preserve pre-existing baseline evidence, Flux Pro archive and `tmp/`.
+- Next actions: verify/summarize baseline, record researched provisional decisions and refine feature tasks; implement bootstrap and IAM/property foundation before dependent hotel operations.
+- Hermes may create/analyze/refine specs/plans/tasks and mark implementable tasks READY under the delegated mandate. External device/license/legal/Windows acceptance is not automatically approved by research; isolate it and continue independently testable work.
+- Update this active handoff after each slice with actual checks and next task. Historical sections below are context, not the current baseline-only restriction.
+
 Last updated: 2026-10-18
 
 ## Repository and branches

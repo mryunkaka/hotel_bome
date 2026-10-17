@@ -1,5 +1,9 @@
 # Konstitusi Project Hotel PMS
 
+## Amendemen eksekusi 2026-10-18
+
+Mandat eksplisit pemilik dalam `docs/HERMES_AUTONOMOUS_BUILD.md` mengizinkan Hermes mengambil peran perencanaan, riset keputusan sementara, implementasi dan pengujian pada branch integrasi `work/hermes-full-build`. Requirement yang belum dikonfirmasi tetap diberi provenance sebagai keputusan sementara; approval legal/accountant/vendor dan hasil physical acceptance tidak boleh dikarang. Semua prinsip inti di bawah tetap berlaku. Pembatasan pembagian peran/baseline lama yang bertentangan dengan mandat ini digantikan hanya dalam scope branch integrasi tersebut.
+
 ## Prinsip inti
 
 ### I. Operasional local-first
