@@ -8,7 +8,7 @@ Last updated: 2026-10-18
 - Remote: `https://github.com/mryunkaka/hotel_bome.git`
 - Existing workflow branch remains `chore/spec-kit-workflow` at base `a2ce0c13bd002679a1b9f08bc0c9135d2e10a7db`; `main` is untouched.
 - Planning artifacts are pushed on `docs/pms-project-plan`; package commit: `69a7faac831a8014a792c695c326a82b66110369`.
-- The active read-only task branch is `feat/disc-001-baseline`, based on planning commit `69a7faac831a8014a792c695c326a82b66110369`.
+- The active read-only task branch is `feat/disc-001-baseline`, based on the latest pushed tip of `docs/pms-project-plan`; the exact base SHA is recorded in the dispatch message.
 - Future implementation must use separate feature/implementation branches from the latest approved planning SHA; never work on main and never force-push.
 
 ## Owner decisions confirmed 2026-10-17
