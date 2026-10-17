@@ -47,3 +47,6 @@ yarn-error.log
 /.agents/skills/speckit-*/**
 !/.agents/skills/speckit-*/SKILL.md
 !/AGENTS.md
+
+# Machine-local Spec Kit integration catalog cache.
+/.specify/integrations/.cache/
