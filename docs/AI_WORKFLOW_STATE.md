@@ -1,14 +1,15 @@
 # Workflow state and Hermes handoff
 
-Last updated: 2026-10-17
+Last updated: 2026-10-18
 
 ## Repository and branches
 
 - Local project: `D:\Project\hotel_new`
 - Remote: `https://github.com/mryunkaka/hotel_bome.git`
 - Existing workflow branch remains `chore/spec-kit-workflow` at base `a2ce0c13bd002679a1b9f08bc0c9135d2e10a7db`; `main` is untouched.
-- Planning artifacts are prepared on separate branch `docs/pms-project-plan`, based on the workflow branch. Record the final planning SHA after push.
-- Hermes implementation must use a feature/implementation branch created from the pushed planning SHA; never work on main and never force-push.
+- Planning artifacts are pushed on `docs/pms-project-plan`; package commit: `69a7faac831a8014a792c695c326a82b66110369`.
+- The active read-only task branch is `feat/disc-001-baseline`, based on planning commit `69a7faac831a8014a792c695c326a82b66110369`.
+- Future implementation must use separate feature/implementation branches from the latest approved planning SHA; never work on main and never force-push.
 
 ## Owner decisions confirmed 2026-10-17
 
@@ -46,10 +47,10 @@ Only `DISC-001` read-only baseline evidence is READY. See `specs/001-discovery-b
 Handoff instructions:
 
 1. Use checkout `/workspace/hotel_bome_workflow`; explicitly `cd` there. Use `/opt/data/.local/bin/specify` if CLI is needed. Hermes managed Spec Kit integration remains prohibited because `multi_install_safe: false`; use installed global skills and shared Bash adapters only.
-2. Confirm branch `docs/pms-project-plan`, planning SHA recorded below, and clean worktree before any check.
+2. Confirm branch `feat/disc-001-baseline`, base SHA recorded in the task handoff, and clean worktree before any check.
 3. Run only `composer test` for the baseline; do not change app code, dependencies, workflows, `.specify/integration.json`, or other feature artifacts.
 4. Update only `docs/product/BASELINE_EVIDENCE.md` with actual test command, environment, exit code, counts, sanitized result and any blocker. Never include secrets.
-5. Review and commit only that file to the planning branch if the branch is explicitly supplied by handoff; do not touch main. Report exact SHA and stop because implementation tasks remain gated.
+5. Review and commit only that file on `feat/disc-001-baseline`; push only that task branch. Report exact SHA and stop because implementation tasks remain gated.
 
 ## User-owned local changes to preserve
 
