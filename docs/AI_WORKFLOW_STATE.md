@@ -5,11 +5,11 @@
 - Owner requested autonomous planning/research/implementation/testing and periodic pushes; see `docs/HERMES_AUTONOMOUS_BUILD.md` for the complete execution mandate. This supersedes the baseline-only handoff below on the integration branch.
 - Integration branch: `work/hermes-full-build`, starting at `ca295269766b482df89b78358a3c154a3f159c3d` plus the autonomous mandate commit. Use the actual current remote tip and record every verified checkpoint; do not require HEAD to stay at the starting SHA.
 - Checkout remains `/workspace/hotel_bome_workflow`. Preserve pre-existing baseline evidence, Flux Pro archive and `tmp/`.
-- Next actions: verify/summarize baseline, record researched provisional decisions and refine feature tasks; implement bootstrap and IAM/property foundation before dependent hotel operations.
-- Hermes may create/analyze/refine specs/plans/tasks and mark implementable tasks READY under the delegated mandate. External device/license/legal/Windows acceptance is not automatically approved by research; isolate it and continue independently testable work.
-- Update this active handoff after each slice with actual checks and next task. Historical sections below are context, not the current baseline-only restriction.
-
-Last updated: 2026-10-18
+- Latest verified slice: branch `work/hermes-full-build`, prior HEAD `dea0b80034f0ee682629c62557d72965d5d1ceff` matched fetched origin; PHP 8.4.26; runtime paths owned by `saidadam28`. Preserved baseline evidence, Flux archive and `tmp/`.
+- IAM pending login regression addressed: Fortify authentication rejects non-active accounts; registration now uses `App\\Http\\Controllers\\Auth\\PendingRegisteredUserController` so pending registrations are stored without establishing a session. `routes/web.php` shadows Fortify POST endpoint; no vendor edits retained.
+- `php artisan test --filter=RegistrationTest`: 4 tests/12 assertions PASS. Full `composer test`: Pint PASS, PHPStan 0 errors, PHPUnit 36/36 tests, 90 assertions PASS; Composer emits PHP 8.4 deprecation notices from system Composer libraries. `git diff --check` PASS before state update.
+- IAM remains incomplete: admin approval/bootstrap UI, membership/tenant enforcement, and audit tasks not implemented. Next: inspect readiness and continue independent foundation slices. Windows/LAN/hardware/signing acceptance stays BLOCKED_EXTERNAL.
+- Worktree also contains user-owned `docs/product/BASELINE_EVIDENCE.md` and `packages/flux-pro-2.20.1.zip`; never stage either. No commit/push recorded in this checkpoint.
 
 ## Repository and branches
 

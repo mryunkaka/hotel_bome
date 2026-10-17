@@ -1,6 +1,11 @@
 <?php
 
+use App\Http\Controllers\Auth\PendingRegisteredUserController;
 use Illuminate\Support\Facades\Route;
+
+Route::post('/register', [PendingRegisteredUserController::class, 'store'])
+    ->middleware('guest')
+    ->name('register.store');
 
 Route::view('/', 'welcome')->name('home');
 

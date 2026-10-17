@@ -48,6 +48,11 @@ class User extends Authenticatable implements MustVerifyEmail, PasskeyUser
         ];
     }
 
+    public function canAuthenticate(): bool
+    {
+        return $this->status === 'active';
+    }
+
     /**
      * Get the user's initials
      */
