@@ -10,7 +10,7 @@ Jalankan dari root repository. Codex membaca AGENTS.md, dokumen workflow dan sta
 
 Perintah awal Hermes yang dapat ditempel pada sesi baru:
 
-> Baca AGENTS.md, docs/AI_WORKFLOW.md, docs/AI_WORKFLOW_STATE.md, dan .specify/memory/constitution.md dari root repo. Pastikan branch dan Git status sebelum perubahan. Baca hanya spec/plan/tasks untuk fitur yang ditandai aktif di state. Lanjutkan tugas ready pada branch fitur tersebut, jangan mengulang task yang sudah done, jangan menyentuh main, rahasia, data produksi, atau perubahan pengguna. Jalankan verifikasi yang diminta, catat bukti aktual dan perbarui state serta handoff. Jika ada blocker bisnis, akses, keamanan, atau data, catat blocker; lanjutkan task independen yang tidak terpengaruh.
+> Untuk Hermes VPS, mulai dengan `cd /workspace/hotel_bome_workflow` (atau root tepat yang diberikan handoff), lalu baca `AGENTS.md`, `docs/AI_WORKFLOW.md`, `docs/AI_WORKFLOW_STATE.md`, dan `.specify/memory/constitution.md`. Shell Hermes dapat mulai di `/workspace`, jadi jangan mengasumsikan `--in` otomatis mengubah direktori. Periksa branch, commit, dan `git status`. Skill aktif ada di `/opt/data/skills/speckit-*`; panggil skill sesuai task. Jika perlu menjalankan CLI, gunakan `/opt/data/.local/bin/specify` karena PATH tool Hermes belum tentu memuatnya. Baca hanya spec/plan/tasks untuk fitur aktif. Jika tidak ada fitur aktif, jangan mengubah kode aplikasi; laporkan siap menunggu spesifikasi Codex. Jangan mengulang task done, menyentuh `main`, rahasia, data produksi, atau perubahan pengguna. Verifikasi task yang diizinkan, catat bukti aktual, perbarui state dan handoff. Jika ada blocker bisnis, akses, keamanan, atau data, catat blocker dan lanjutkan hanya task independen.
 
 Jika branch atau commit lokal berbeda dari remote yang disebut dalam state, berhenti sebelum edit dan laporkan hash serta status. Jangan menebak branch.
 
@@ -36,6 +36,14 @@ Dokumen discovery memuat rekomendasi dan sejumlah keputusan yang belum dikonfirm
 - Setelah Hermes selesai, memeriksa diff, test evidence, cakupan acceptance, keamanan, dan status remote. Jangan menerima klaim tanpa bukti.
 
 ### Hermes VPS
+
+Detail runtime Hermes Docker:
+
+- Workspace project tersinkron di `/workspace/hotel_bome_workflow`; gunakan path yang dicantumkan pada handoff aktif bila berbeda. Selalu jalankan `cd` eksplisit sebelum memeriksa repo.
+- Spec Kit CLI 1.2.1 ada di `/opt/data/.local/bin/specify`; gunakan path absolut di shell worker.
+- Hermes 0.21.6 memuat 10 skill dari `/opt/data/skills/speckit-*`. Symlink `/opt/data/.hermes/skills` menunjuk ke direktori itu agar sesuai dengan lokasi yang dipakai installer Spec Kit.
+- Integrasi managed proyek tetap Codex saja. Spec Kit 1.2.1 menyatakan Hermes tidak aman untuk co-install (`multi_install_safe: false`); jangan jalankan `integration install/uninstall/switch hermes` pada checkout Codex utama. Skill global Hermes dan enam skrip Bash bersama memungkinkan kedua runtime memakai artefak fitur yang sama.
+- `specify integration status --json` harus tetap `ok` dengan default `codex`; untuk task Hermes gunakan direktori repo, Bash scripts di `.specify/scripts/bash/`, dan skill global.
 
 - Mengambil branch dan commit sesuai handoff; tidak bekerja dari folder atau branch lain.
 - Menjalankan tugas implementasi berurutan pada satu fitur aktif; teruskan ke task berikutnya yang statusnya ready sampai semua task fitur selesai atau tersisa blocker.

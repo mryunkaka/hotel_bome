@@ -1,34 +1,37 @@
-# Workflow state dan handoff
+# Status workflow dan handoff
 
-Last updated: 2026-10-17
+Tanggal pembaruan: 17 Oktober 2026
 
 ## Repository
 
-- Local path: `D:\Project\hotel_new`
+- Path lokal: `D:\Project\hotel_new`
 - Remote: `https://github.com/mryunkaka/hotel_bome.git`
-- Setup branch: `chore/spec-kit-workflow` (dibuat dari `origin/main`)
-- `main`: tidak diubah
-- Spec Kit CLI: 1.2.1; integrasi Codex dipasang di repo dan tervalidasi.
-- Codex skills: 10 skill `$speckit-*` di `.agents/skills/`.
-- Fondasi aplikasi: Laravel 13 / Livewire 4 starter; fitur PMS belum dimulai.
+- Branch setup: `chore/spec-kit-workflow`, berasal dari `origin/main`; perubahan workflow sudah di-push.
+- `main` tidak diubah.
+- Spec Kit CLI 1.2.1; integrasi Codex aktif dan berstatus `ok`; 10 skill Codex berada di `.agents/skills/`.
+- Artefak bersama di `.specify/`: template, constitution, dan skrip PowerShell serta Bash.
+- Baseline aplikasi: Laravel 13 / Livewire 4 starter; belum ada spesifikasi atau implementasi fitur PMS.
+
+## Hermes VPS
+
+- Container Hermes Agent 0.21.6. `uv 0.13.1` dan Spec Kit CLI 1.2.1 terpasang di `/opt/data/.local/bin`, pada mount persisten `/opt/data`.
+- Checkout project: host `/home/saidadam28/workspace/hotel_bome_workflow`, di container `/workspace/hotel_bome_workflow`, branch `chore/spec-kit-workflow` mengikuti remote.
+- Sepuluh skill Spec Kit aktif di `/opt/data/skills/speckit-*`. Symlink `/opt/data/.hermes/skills` menunjuk ke `/opt/data/skills` agar cocok dengan direktori skill yang dibaca Hermes Docker ini.
+- Spec Kit menyatakan integrasi Hermes tidak aman untuk dipasang bersamaan (`multi_install_safe: false`). Metadata project karena itu tetap hanya mengelola integrasi Codex agar `specify integration status --json` berstatus `ok`. Skill global Hermes dan skrip Bash bersama dipasang terpisah. Jangan jalankan `integration install/uninstall/switch hermes` pada checkout Codex utama.
+- Uji read-only melalui Hermes dengan model `hermes-worker-safe` berhasil setelah menjalankan `cd /workspace/hotel_bome_workflow` dan CLI absolut `/opt/data/.local/bin/specify`. Status `ok`, default Codex, sepuluh skill terlihat, dan tidak ada file yang berubah. Shell Hermes dapat mulai di `/workspace`; selalu lakukan `cd` eksplisit. CLI `specify` tanpa path mungkin tidak ditemukan; gunakan path absolut.
 
 ## Posisi pekerjaan
 
-- Panduan persisten tersedia di `AGENTS.md`, `docs/AI_WORKFLOW.md`, dan dokumen konteks/rencana.
-- `.specify/memory/constitution.md` berisi prinsip proyek; belum ada spesifikasi fitur aktif.
-- Integrasi Hermes di VPS dan sinkronisasi branch setup: belum diverifikasi pada sesi ini.
-- Tes aplikasi: tidak dijalankan; tugas ini menyiapkan workflow, bukan fitur aplikasi.
-- Flux Pro target pemilik: 2.20.1. Perubahan `composer.lock` dan `packages/composer.json` serta arsip paket lokal adalah perubahan working tree pengguna; arsip komersial tidak ikut commit/push. Branch setup hasil `origin/main` mungkin masih berisi versi Flux sebelumnya. Sebelum Hermes mulai task yang memasang dependency Flux, sinkronkan paket/lockfile secara privat dan verifikasi lisensi serta ketersediaan artifact.
-- `tmp/pdfs/` adalah file lokal pengguna dan tidak termasuk workflow commit.
+- Setup workflow sudah di-commit dan di-push pada branch `chore/spec-kit-workflow` (`aee320f`, `97b7832`).
+- Belum ada fitur/spec PMS aktif. Hermes tidak boleh mulai mengubah aplikasi sampai Codex menyiapkan satu slice dengan spec, plan, tasks, acceptance, dan handoff.
+- Pemeriksaan workflow: `specify check` dan status integrasi lokal Codex lulus; status integrasi VPS lulus; `bash -n .specify/scripts/bash/*.sh` lulus; uji read-only Hermes lulus.
+- Test aplikasi tidak dijalankan karena perubahan tugas ini hanya menyiapkan workflow.
+- Target Flux Pro dari pemilik: 2.20.1. Perubahan `composer.lock`, `packages/composer.json`, penghapusan arsip 2.20.0 yang terlacak, dan arsip 2.20.1 yang belum terlacak adalah perubahan working tree pengguna di `D:\Project\hotel_new`; tidak ada yang masuk commit workflow. Branch remote hasil `origin/main` mungkin masih memakai keadaan Flux sebelumnya. Sebelum task dependency, sepakati distribusi privat artifact Flux komersial dan verifikasi lockfile pada branch aktif.
+- `tmp/pdfs/` berisi file lokal pengguna; jangan stage atau push.
 
-## Protokol sesi Codex/Hermes
+## Protokol sesi
 
-1. Baca `AGENTS.md`, lalu `docs/AI_WORKFLOW.md` dan bagian relevan `docs/AI_WORKFLOW_STATE.md`; baca konteks/rencana dan artefak fitur aktif saja.
-2. Codex membuat satu slice berisi spec, plan, tasks, kriteria uji dan handoff sebelum Hermes mengubah kode.
-3. Hermes hanya mengerjakan task yang siap dan diizinkan dalam artefak; jangan menyimpulkan keputusan bisnis. Catat commit, file, perintah uji dan hasil.
-4. Codex memeriksa diff serta bukti hasil, memperbarui state, lalu menyiapkan slice berikutnya.
-5. Teruskan task siap berikutnya hanya selama tidak ada blocker/keputusan manusia, gagal validasi, risiko destruktif atau masalah keamanan.
-
-## Pembaruan per sesi
-
-Catat branch dan commit yang diperiksa, slice aktif, status task, perubahan, perintah uji dan hasil, commit/push hash, serta langkah berikutnya. Jangan menyatakan fitur selesai tanpa pemeriksaan diff dan bukti yang dapat diulang.
+1. Baca `AGENTS.md`, `docs/AI_WORKFLOW.md`, dokumen state ini, constitution, dan hanya artefak fitur aktif.
+2. Codex menentukan satu slice yang terbatas; Hermes hanya mengerjakan task siap pada branch fitur yang diserahkan.
+3. Catat command, hasil, file yang berubah, hash commit/push, task tersisa, dan blocker. Jangan menerima klaim selesai tanpa review diff dan bukti yang dapat diulang.
+4. Lanjutkan task independen yang siap hanya jika tidak ada keputusan bisnis, masalah akses/keamanan, risiko destruktif, kegagalan test yang belum dipahami, atau masalah sinkronisasi Git.
