@@ -3,7 +3,7 @@
     "description": "The pro version of Flux, the official UI component library for Livewire.",
     "keywords": ["flux", "laravel", "livewire", "components", "ui"],
     "license": "proprietary",
-    "version": "2.20.0",
+    "version": "2.20.1",
     "authors": [
         {
             "name": "Caleb Porzio",
@@ -18,7 +18,7 @@
         "symfony/console": "^6.0|^7.0|^8.0",
         "livewire/livewire": "^3.7.4|^4.0|dev-main",
         "laravel/prompts": "^0.1.24|^0.2|^0.3",
-        "livewire/flux": "2.20.0|dev-main"
+        "livewire/flux": "2.20.1|dev-main"
     },
     "autoload": {
         "psr-4": {
