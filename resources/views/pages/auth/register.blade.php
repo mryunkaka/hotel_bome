@@ -4,6 +4,7 @@
             <p class="text-xs font-semibold tracking-[0.2em] text-amber-700 uppercase dark:text-amber-400">{{ __('Get started') }}</p>
             <flux:heading size="xl">{{ __('Create your account') }}</flux:heading>
             <flux:text>{{ __('Set up your access to the hotel operations workspace.') }}</flux:text>
+            <flux:callout variant="warning" icon="clock">{{ __('An administrator must approve your account before you can sign in.') }}</flux:callout>
         </div>
 
         @if ($errors->any())

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "75c8608726dcbf31dc1f7dd166da8b20",
+    "content-hash": "61afc9d18c3b6700e390de4391a3e258",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -2435,16 +2435,16 @@
         },
         {
             "name": "livewire/flux",
-            "version": "v2.20.0",
+            "version": "v2.20.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/livewire/flux.git",
-                "reference": "9c3645ce3eb11ddf42ec956dcea322447469826a"
+                "reference": "ee9ad7f91087ea117a2c80993a14cb25bb902f70"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/livewire/flux/zipball/9c3645ce3eb11ddf42ec956dcea322447469826a",
-                "reference": "9c3645ce3eb11ddf42ec956dcea322447469826a",
+                "url": "https://api.github.com/repos/livewire/flux/zipball/ee9ad7f91087ea117a2c80993a14cb25bb902f70",
+                "reference": "ee9ad7f91087ea117a2c80993a14cb25bb902f70",
                 "shasum": ""
             },
             "require": {
@@ -2495,24 +2495,24 @@
             ],
             "support": {
                 "issues": "https://github.com/livewire/flux/issues",
-                "source": "https://github.com/livewire/flux/tree/v2.20.0"
+                "source": "https://github.com/livewire/flux/tree/v2.20.1"
             },
-            "time": "2026-09-15T13:15:09+00:00"
+            "time": "2026-09-28T18:14:53+00:00"
         },
         {
             "name": "livewire/flux-pro",
-            "version": "2.20.0",
+            "version": "2.20.1",
             "dist": {
                 "type": "zip",
-                "url": "./packages/flux-pro-2.20.0.zip",
-                "shasum": "42d0c43fe4a67fd98ca36143d315869a2c9c7f06"
+                "url": "./packages/flux-pro-2.20.1.zip",
+                "shasum": "3ea65e5e81ad178c411f41256ef89a9cd96a4be1"
             },
             "require": {
                 "illuminate/console": "^10.0|^11.0|^12.0|^13.0",
                 "illuminate/support": "^10.0|^11.0|^12.0|^13.0",
                 "illuminate/view": "^10.0|^11.0|^12.0|^13.0",
                 "laravel/prompts": "^0.1.24|^0.2|^0.3",
-                "livewire/flux": "2.20.0|dev-main",
+                "livewire/flux": "2.20.1|dev-main",
                 "livewire/livewire": "^3.7.4|^4.0|dev-main",
                 "php": "^8.1",
                 "symfony/console": "^6.0|^7.0|^8.0"
@@ -10511,12 +10511,12 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {},
+    "stability-flags": [],
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
-        "php": "^8.3"
+        "php": "^8.4.1"
     },
-    "platform-dev": {},
-    "plugin-api-version": "2.9.0"
+    "platform-dev": [],
+    "plugin-api-version": "2.6.0"
 }

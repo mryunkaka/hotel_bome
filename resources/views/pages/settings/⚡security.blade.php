@@ -279,22 +279,22 @@ new #[Title('Security settings')] class extends Component {
                 <div class="mt-6 flex flex-col w-full mx-auto space-y-6 text-sm" wire:cloak>
                     <div class="border rounded-lg border-zinc-200 dark:border-zinc-700 overflow-hidden">
                         @forelse ($passkeys as $passkey)
-                            <div class="flex items-center justify-between p-4 {{ ! $loop->last ? 'border-b border-zinc-200 dark:border-zinc-700' : '' }}">
-                                <div class="flex items-center gap-4">
+                            <div class="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between {{ ! $loop->last ? 'border-b border-zinc-200 dark:border-zinc-700' : '' }}">
+                                <div class="flex min-w-0 items-start gap-3 sm:items-center sm:gap-4">
                                     <div class="flex size-10 shrink-0 items-center justify-center rounded-xl bg-zinc-100 dark:bg-zinc-800">
                                         <flux:icon.key class="size-5 text-zinc-500 dark:text-zinc-400" />
                                     </div>
-                                    <div class="space-y-1">
-                                        <div class="flex items-center gap-2.5">
-                                            <p class="font-medium tracking-tight">{{ $passkey['name'] }}</p>
+                                    <div class="min-w-0 space-y-1">
+                                        <div class="flex flex-wrap items-center gap-2.5">
+                                            <p class="break-words font-medium tracking-tight">{{ $passkey['name'] }}</p>
                                             @if ($passkey['authenticator'])
                                                 <flux:badge size="sm">{{ $passkey['authenticator'] }}</flux:badge>
                                             @endif
                                         </div>
-                                        <p class="text-zinc-500 dark:text-zinc-400 text-xs">
+                                        <p class="break-words text-xs text-zinc-500 dark:text-zinc-400">
                                             {{ __('Added :time', ['time' => $passkey['created_at_diff']]) }}
                                             @if ($passkey['last_used_at_diff'])
-                                                <span class="opacity-50 mx-1">/</span>
+                                                <span class="mx-1 opacity-50">/</span>
                                                 {{ __('Last used :time', ['time' => $passkey['last_used_at_diff']]) }}
                                             @endif
                                         </p>
@@ -307,7 +307,8 @@ new #[Title('Security settings')] class extends Component {
                                     icon="trash"
                                     icon:variant="outline"
                                     wire:click="confirmDelete({{ $passkey['id'] }})"
-                                    class="text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/50"
+                                    aria-label="{{ __('Remove passkey: :name', ['name' => $passkey['name']]) }}"
+                                    class="min-h-11 min-w-11 shrink-0 self-end text-red-500 hover:bg-red-50 hover:text-red-600 sm:self-auto dark:hover:bg-red-950/50"
                                 />
                             </div>
                         @empty

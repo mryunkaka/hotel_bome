@@ -2,9 +2,12 @@
 
 namespace App\Providers;
 
+use App\Models\User;
 use Carbon\CarbonImmutable;
+use Illuminate\Auth\Events\Login;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
 
@@ -23,6 +26,12 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Event::listen(Login::class, function (Login $event): void {
+            if ($event->guard === config('auth.defaults.guard') && $event->user instanceof User) {
+                request()->session()->put('auth_version_'.$event->user->getAuthIdentifier(), $event->user->auth_version);
+            }
+        });
+
         $this->configureDefaults();
     }
 
@@ -43,7 +52,6 @@ class AppServiceProvider extends ServiceProvider
                 ->letters()
                 ->numbers()
                 ->symbols()
-                ->uncompromised()
             : null,
         );
     }

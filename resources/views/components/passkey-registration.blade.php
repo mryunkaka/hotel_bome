@@ -95,8 +95,9 @@
 
             <p x-show="error" x-text="error" x-cloak class="text-sm text-red-600 dark:text-red-400"></p>
 
-            <div class="flex gap-2">
+            <div class="flex flex-col gap-2 sm:flex-row">
                 <flux:button
+                    class="w-full sm:w-auto"
                     variant="primary"
                     x-on:click="register()"
                     x-bind:disabled="loading || !name.trim()"

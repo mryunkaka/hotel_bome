@@ -40,6 +40,8 @@ class SecurityTest extends TestCase
 
         $response->assertSee('Passkeys');
         $response->assertSee('No passkeys yet');
+        $response->assertSee('max-md:flex-col', false);
+        $response->assertSee('flex flex-col gap-2 sm:flex-row', false);
         $response->assertSee('Two-factor authentication');
         $response->assertSee('Enable 2FA');
     }

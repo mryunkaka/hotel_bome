@@ -2,7 +2,7 @@
 
 Dokumen ini adalah konteks kerja untuk AI/pengembang saat merancang dan membangun ulang aplikasi. Ringkasan pengguna ada di `docs/REBUILD_PLAN.md`. Jangan menganggap fitur repo sekarang sebagai requirement final tanpa konfirmasi bisnis dan pengujian.
 
-**Status:** discovery dan rekomendasi; belum ada proyek rebuild dibuat. UI yang dipilih pemilik: Flux Pro 2.20.0; jangan gunakan Filament pada rebuild.
+**Status:** Fondasi rebuild Laravel 13 dan Livewire 4 sudah ada di D:\Project\hotel_new; fitur PMS belum mulai dibangun. UI yang dipilih pemilik: Flux Pro 2.20.1; jangan gunakan Filament pada rebuild.
 **Tanggal baseline versi:** 2026-10-17. Verifikasi ulang release/kompatibilitas sebelum instalasi.
 
 ## 1. Tujuan produk
@@ -18,9 +18,9 @@ Prinsip utama:
 5. **Update terkontrol:** paket rilis ditandatangani, backup dulu, migrasi forward-compatible, health check, baru aktif.
 6. **Tanpa dependency internet runtime:** semua assets, font, scripts, dependencies, dokumentasi installer dan update fallback tersedia di paket lokal.
 
-## 2. Baseline repositori yang dikaji
+## 2. Aplikasi legacy yang dikaji sebagai sumber pemetaan (baseline historis)
 
-Repositori saat ini berada di `D:\Project\hotel_new`, origin `https://github.com/mryunkaka/hotel-bome`, Laravel 12 + Filament 4, PHP constraint `^8.2`. Struktur penting:
+Pada audit legacy sebelum fondasi baru, kode yang ditinjau berada di D:\Project\hotel_new, origin https://github.com/mryunkaka/hotel-bome, menggunakan Laravel 12 + Filament 4 dan constraint PHP ^8.2. Catatan pada bagian ini adalah peta alur historis, bukan deskripsi kode rebuild saat ini.
 
 - `routes/web.php`: halaman admin, endpoint kustom, PDF dan aksi operasional; file panjang dan sebagian aturan bisnis ada di closure.
 - `routes/api.php`: API RFID yang terdaftar terpisah dari web routes.
@@ -32,6 +32,12 @@ Repositori saat ini berada di `D:\Project\hotel_new`, origin `https://github.com
 - `rfid/Program.cs`, `rfid/rfid.exe`, `rfid/vendor/*.dll`: program C# dan SDK vendor RFID/lock.
 
 > **Audit route/UI hanya peta kode:** route list mencakup 88 route admin; halaman `/admin/login` memberi HTTP 200 saat dikaji. Ini tidak membuktikan semua aksi CRUD, report, atau perangkat fisik sudah berfungsi end-to-end.
+
+
+
+## 2.1 Fondasi rebuild saat ini
+
+Repository target: D:\Project\hotel_new; origin https://github.com/mryunkaka/hotel_bome.git. Root composer manifest menetapkan constraint PHP ^8.4.1 (selaras dengan minimum paket dalam lockfile), Laravel ^13.17, Livewire ^4.1, dan Flux Pro ^2.20. Lockfile lokal yang diperiksa saat penyiapan mengunci laravel/framework v13.37.0, livewire/livewire v4.4.7, dan livewire/flux-pro 2.20.1. Pastikan lockfile serta tersedianya artifact Flux pada setiap branch/clone sebelum dependency dipasang; constraint PHP bukan bukti versi PHP runtime. Fitur PMS belum diimplementasikan; route starter kit adalah fondasi, bukan acceptance PMS.
 
 ## 3. Alur operasional yang perlu dipertahankan dan diverifikasi
 
@@ -81,7 +87,7 @@ At 2026-10-17:
 
 - Laravel **13.x**; official release 2026-03-17, PHP 8.3–8.5; bug fixes through Q3 2027, security through 2028-03-17. Select latest patched `13.x` at build time and lock composer dependencies.
 - PHP **8.5.x** current stable branch (exact patch verified at packaging time); bundle compatible Windows runtime, extensions and `php.ini` rather than asking hotel staff to install PHP/Composer.
-- UI: **Flux Pro 2.20.0 + Livewire 4 + Tailwind CSS 4.2+**, tanpa Filament. Flux 2.20.0 dipatok sesuai pilihan pemilik; jangan menaikkan versi otomatis. Tag 2.20.1 sudah tersedia pada baseline riset, tetapi bukan versi yang diminta. Cek kompatibilitas aktual dengan Laravel/PHP dan lockfile saat build.
+- UI: **Flux Pro 2.20.1 + Livewire 4 + Tailwind CSS 4.2+**, tanpa Filament. Pemilik memilih Flux Pro 2.20.1. Lockfile lokal yang diperiksa mematok versi itu; branch atau clone lain wajib memeriksa composer.lock dan artifact sebelum implementasi. Jangan menaikkan versi otomatis.
 - Flux Pro adalah pustaka komponen berlisensi, bukan generator panel CRUD. Tim harus membangun layout, navigasi, tabel, formulir, validasi, policy, dan alur operasional sendiri. Lisensi Flux menyebut penggunaan untuk satu End Product komersial yang dapat dijual ke pengguna akhir; komponen tidak boleh didistribusikan sebagai pustaka UI tersendiri. Simpan kredensial Composer privat hanya di pipeline build, jangan di repo atau installer pelanggan. Konfirmasi entitlement lisensi saat pembelian.
 - Livewire 4 mempertahankan UI tanpa reload penuh, tetapi interaksi server memerlukan request HTTP lokal dan proses render/hydration. Jangan kirim state/form besar; debounce pencarian, gunakan pagination, pecah komponen, dan hindari polling/re-render untuk semua widget. Gunakan Alpine/JavaScript lokal hanya untuk interaksi kecil yang tidak perlu menyimpan data.
 - Tailwind v4 dan seluruh aset Flux/Livewire harus dibangun dan dibundel lokal. Jangan mengambil font, ikon, skrip, atau CSS dari CDN; Flux menyediakan Inter via host eksternal pada konfigurasi dokumentasi, jadi gunakan font lokal atau system font.
@@ -100,7 +106,7 @@ Official references:
 - Laravel release policy: https://laravel.com/framework/docs/releases
 - Laravel production deployment: https://laravel.com/framework/docs/deployment
 - Flux installation: https://fluxui.dev/docs/installation
-- Flux 2.20.0 tag/release history: https://github.com/livewire/flux/releases
+- Flux Pro 2.20.1 tag/release history: https://github.com/livewire/flux/releases
 - Flux license terms: https://fluxui.dev/terms
 - Livewire 4 hydration and installation: https://livewire.laravel.com/docs/4.x/hydration and https://livewire.laravel.com/docs/4.x/installation
 - PHP supported versions: https://www.php.net/supported-versions.php
@@ -153,7 +159,7 @@ Recommended shared entities: `audit_events`, `sync_outbox`, `sync_receipts`/curs
 
 ```mermaid
 flowchart LR
-    Staff[Staff browser] -->|localhost or hotel LAN| Web[Local Laravel 13 / Livewire 4 + Flux Pro 2.20.0]
+    Staff[Staff browser] -->|localhost or hotel LAN| Web[Local Laravel 13 / Livewire 4 + Flux Pro 2.20.1]
     Reader[USB reader / lock SDK] --> Agent[Local hardware agent]
     Agent -->|loopback authenticated API| Web
     Web -->|transactional writes| DB[(Local MySQL LTS)]

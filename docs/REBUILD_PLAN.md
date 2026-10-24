@@ -1,6 +1,6 @@
 # Rencana bangun ulang sistem hotel
 
-**Rancangan discovery, 17 Oktober 2026.** Belum ada aplikasi baru yang dibuat.
+**Rancangan discovery, 17 Oktober 2026.** Fondasi Laravel 13 + Livewire 4 sudah dibuat; modul PMS dan alur operasional belum dibangun.
 
 ## Tujuan
 
@@ -11,7 +11,7 @@ Sistem hotel berjalan lokal saat internet mati. Server hotel menyimpan transaksi
 | Bagian | Pilihan |
 |---|---|
 | Framework | Laravel 13.x, PHP 8.5.x, versi patch dikunci saat build |
-| UI | **Flux Pro 2.20.0 + Livewire 4 + Tailwind CSS 4.2+**; tanpa Filament |
+| UI | **Flux Pro 2.20.1 + Livewire 4 + Tailwind CSS 4.2+**; tanpa Filament |
 | Database | MySQL 9.7 LTS lokal |
 | Web/PHP Windows | FrankenPHP sebagai kandidat, service dikelola WinSW setelah diuji pada Windows target |
 | Hardware pintu | Agent lokal terpisah hanya jika SDK/perangkat mengharuskannya |
@@ -46,7 +46,7 @@ Daftar lengkap alur, entitas data, risiko, serta peta fitur dari proposal ada di
 
 ## Temuan penting dari aplikasi yang ada
 
-Repo yang ditinjau memakai Laravel 12 dan Filament 4; rebuild akan mengganti UI dengan Flux. Audit awal juga menemukan endpoint RFID belum memvalidasi token bridge dan belum mencatat scan dengan benar, terdapat relasi cascade yang berisiko menghapus riwayat, serta konsep `bookings` dan `reservations` yang perlu disatukan/ditetapkan. Integrasi pintu belum boleh dianggap siap sebelum diuji dengan perangkat sebenarnya.
+Aplikasi legacy yang ditinjau sebelum fondasi rebuild memakai Laravel 12 dan Filament 4; catatan tersebut hanya peta alur dan risiko, bukan stack kode saat ini. Audit awal juga menemukan endpoint RFID belum memvalidasi token bridge dan belum mencatat scan dengan benar, terdapat relasi cascade yang berisiko menghapus riwayat, serta konsep `bookings` dan `reservations` yang perlu disatukan/ditetapkan. Integrasi pintu belum boleh dianggap siap sebelum diuji dengan perangkat sebenarnya.
 
 ## Tahapan pembangunan
 
@@ -62,8 +62,8 @@ Repo yang ditinjau memakai Laravel 12 dan Filament 4; rebuild akan mengganti UI 
 - [MySQL 9.7 LTS policy](https://dev.mysql.com/doc/refman/9.7/en/mysql-releases.html)
 - [Flux installation](https://fluxui.dev/docs/installation), [Flux license terms](https://fluxui.dev/terms), [Flux releases](https://github.com/livewire/flux/releases)
 - [Livewire 4 hydration](https://livewire.laravel.com/docs/4.x/hydration), [Livewire installation](https://livewire.laravel.com/docs/4.x/installation)
-- Komunitas: [pengalaman Livewire 4 + Flux](https://www.reddit.com/r/laravel/comments/1qk51s8/livewire_4_and_flux_the_best_way_to_build_web/) dan [diskusi kinerja Flux lama](https://www.reddit.com/r/laravel/comments/1lg6ljv/is_flux_too_slow_or_am_i_missing_something/). Ini anekdot, bukan benchmark. Diskusi lama tentang Flux v1/v2 awal bukan bukti kondisi v2.20.0; risiko yang masih relevan ialah ketergantungan komersial dan kebutuhan membangun alur CRUD sendiri.
+- Komunitas: [pengalaman Livewire 4 + Flux](https://www.reddit.com/r/laravel/comments/1qk51s8/livewire_4_and_flux_the_best_way_to_build_web/) dan [diskusi kinerja Flux lama](https://www.reddit.com/r/laravel/comments/1lg6ljv/is_flux_too_slow_or_am_i_missing_something/). Ini anekdot, bukan benchmark. Diskusi lama tentang Flux v1/v2 awal bukan bukti kondisi v2.20.1; risiko yang masih relevan ialah ketergantungan komersial dan kebutuhan membangun alur CRUD sendiri.
 - PMS pembanding: [Oracle PMS](https://www.oracle.com/hospitality/what-is-hotel-pms/), [OPERA tour](https://www.oracle.com/europe/hospitality/hotel-property-management/hotel-pms-software/tour/), [Mews Operations](https://help.mews.com/s/article/Mews-Operations), [Cloudbeds platform](https://www.cloudbeds.com/hospitality-platform/)
 - [FrankenPHP Windows services](https://frankenphp.dev/docs/production/)
 
-Versi paket dan lisensi diverifikasi ulang saat build dimulai. Paket Flux Pro 2.20.0 diminta secara eksplisit dan akan dipatok; versi lebih baru tidak boleh masuk otomatis.
+Pemilik memperbarui pilihan Flux Pro ke 2.20.1 dan lockfile pada working tree lokal menguncinya. Periksa lockfile serta ketersediaan artifact pada branch/clone yang digunakan sebelum implementasi. Verifikasi lisensi/kompatibilitas saat build dan jangan menaikkan versi otomatis.

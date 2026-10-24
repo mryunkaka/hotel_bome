@@ -21,6 +21,8 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
  * @property string $email
  * @property Carbon|null $email_verified_at
  * @property string $password
+ * @property bool $is_platform_admin
+ * @property int $auth_version
  * @property string|null $two_factor_secret
  * @property string|null $two_factor_recovery_codes
  * @property Carbon|null $two_factor_confirmed_at
@@ -43,9 +45,16 @@ class User extends Authenticatable implements MustVerifyEmail, PasskeyUser
     protected function casts(): array
     {
         return [
+            'auth_version' => 'integer',
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_platform_admin' => 'boolean',
         ];
+    }
+
+    public function canAuthenticate(): bool
+    {
+        return $this->status === 'active';
     }
 
     /**
