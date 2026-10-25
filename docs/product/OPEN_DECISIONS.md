@@ -13,13 +13,13 @@ Catatan ini memisahkan fakta, asumsi sementara, dan keputusan pemilik. Keputusan
 | D-001 | Satu atau beberapa hotel per instalasi? | Model property, membership, role, unique key dan tenant isolation | **Diputuskan pemilik 2026-10-17:** beberapa hotel per instalasi |
 | D-002 | Server saja atau beberapa workstation melalui LAN? | Bind/firewall, session/device model, Windows pilot topology | **Diputuskan pemilik 2026-10-17:** server + beberapa PC staf melalui LAN; subnet/firewall tetap harus dikonfigurasi per lokasi |
 | D-003 | Bagaimana registrasi dan admin awal bekerja? | Exposure akun dan bootstrap/install acceptance | **Diputuskan pemilik 2026-10-17:** self-registration tetap tersedia; akun baru pending sampai admin approve. Admin pertama dibuat melalui wizard lokal sekali saat instalasi, lalu wizard terkunci |
-| D-004 | Negara/pajak/mata uang, invoice format/numbering dan tanggal efektif? | Rate snapshot, invoice, reports, finance tests | Terbuka; perlu owner/accountant |
-| D-005 | Aturan cancellation/no-show, waitlist/overbooking, deposit, room-share/move, split folio dan approvals? | Reservation/front desk/cashier state transitions | Terbuka; perlu SOP hotel |
+| D-004 | Negara/pajak/mata uang, invoice format/numbering dan tanggal efektif? | Rate snapshot, invoice, reports, finance tests | Keputusan sementara 2026-10-25; perlu konfirmasi akuntan/Perda |
+| D-005 | Aturan cancellation/no-show, waitlist/overbooking, deposit, room-share/move, split folio dan approvals? | Reservation/front desk/cashier state transitions | Keputusan sementara 2026-10-25; perlu SOP hotel |
 | D-006 | Model lock, card family, reader, SDK and redistribution rights; issue credential or read UID only? | Hardware protocol, threat model, licensing, device tests | Terbuka; butuh vendor/device pilot |
 | D-007 | Data tamu apa boleh keluar hotel, sync one-way atau central edits, consent/retention? | Sync payload, privacy, conflict handling | Terbuka; blokir sinkronisasi PII |
 | D-008 | License offline grace, renewal, support/update ownership; Flux Pro entitlement for multi-customer distribution? | Customer install and commercial package terms | Terbuka; perlu pemilik/vendor terms |
 | D-009 | Which of OTA, gateway/QRIS, POS, QR ordering, guest portal and accounting is release-critical? Which providers? | Vendor contracts and phase scope | Terbuka; perlu owner/vendor/accountant |
-| D-010 | Approval limits, dual control, tax invoice corrections, business date reopening, reports, payment tenders/cash close SOP? | Cashier/night audit/reports/accounting | Terbuka; perlu hotel/accountant |
+| D-010 | Approval limits, dual control, tax invoice corrections, business date reopening, reports, payment tenders/cash close SOP? | Cashier/night audit/reports/accounting | Keputusan sementara 2026-10-25; perlu hotel/accountant |
 
 ## Asumsi sementara yang aman
 

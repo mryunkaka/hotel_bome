@@ -6,6 +6,7 @@ use App\Http\Controllers\Identity\UserAccountLifecycleController;
 use App\Http\Controllers\Identity\UserApprovalController;
 use App\Http\Controllers\Identity\UserMembershipController;
 use App\Http\Controllers\Properties\EngineeringAssetController;
+use App\Http\Controllers\Properties\GuestController;
 use App\Http\Controllers\Properties\HousekeepingTaskController;
 use App\Http\Controllers\Properties\MyPropertiesController;
 use App\Http\Controllers\Properties\PropertyController;
@@ -50,6 +51,13 @@ Route::middleware(['auth', 'active', 'platform-admin'])->group(function () {
     Route::patch('/properties/{property}/rooms/{room}/housekeeping-status', [PropertyInventoryController::class, 'updateRoomStatus'])->name('properties.rooms.status.update');
     Route::post('/properties/{property}/room-blocks', [PropertyInventoryController::class, 'storeRoomBlock'])->name('properties.room-blocks.store');
     Route::patch('/properties/{property}/rooms/{room}/blocks/{block}/cancel', [PropertyInventoryController::class, 'cancelRoomBlock'])->name('properties.room-blocks.cancel');
+
+    Route::get('/properties/{property}/guests', [GuestController::class, 'index'])->name('properties.guests.index');
+    Route::get('/properties/{property}/guests/create', [GuestController::class, 'create'])->name('properties.guests.create');
+    Route::post('/properties/{property}/guests', [GuestController::class, 'store'])->name('properties.guests.store');
+    Route::get('/properties/{property}/guests/{guest}/edit', [GuestController::class, 'edit'])->name('properties.guests.edit');
+    Route::put('/properties/{property}/guests/{guest}', [GuestController::class, 'update'])->name('properties.guests.update');
+    Route::patch('/properties/{property}/guests/{guest}/deactivate', [GuestController::class, 'deactivate'])->name('properties.guests.deactivate');
 });
 
 Route::middleware(['auth', 'active', 'property-role:housekeeping'])->group(function () {

@@ -8,6 +8,7 @@
 - Bila nanti field minimum disetujui: setiap field harus punya tujuan dan dasar pemrosesan tercatat; nama tampilan saja tidak cukup untuk mengklaim anonymous. Gunakan property-scoped CRUD, deny-by-default, audit akses/perubahan, redaksi log, tidak mengirim data keluar instalasi, dan reversible merge review. Hard delete/pemusnahan hanya melalui prosedur terotorisasi setelah pemeriksaan kewajiban arsip/hukum/riwayat transaksi; jangan membuat retention duration default tanpa keputusan.
 - Task teknis yang bisa disiapkan tanpa guest data: inventory processing/data flows dan threat/retention matrix sebagai artefak desain; acceptance: tidak menambah schema/route/PII, setiap proposed field punya purpose/basis/recipient/retention/role/deletion handling, dan semua TBD ditandai BLOCKED_EXTERNAL. Implementasi profile baru setelah review owner/privacy counsel.
 - Revisi: pemilik/privacy counsel menetapkan purpose, dasar, field, retensi, hak akses/permintaan, kebutuhan pencatatan tamu dan aturan penghapusan; akuntan/legal menentukan konflik dengan dokumen bisnis/arsip. Rekomendasi ini bukan approval D-007.
+- Update 2026-10-25 (mandat otonom): untuk membuka implementasi reservasi dan front desk, profil tamu minimum diimplementasikan dengan field operasional non-PII saja: `display_name` (nama tampilan wajib, maks 200 karakter) dan `notes` (catatan internal opsional, maks 500 karakter). Field ini bukan data identitas, dokumen, kontak, DOB, atau kewarganegaraan. Profil tamu bersifat property-scoped; pencarian lintas properti ditolak. Tidak ada upload dokumen, consent capture, export PII, nomor identitas, atau sinkronisasi PII. Audit akses/perubahan tetap berlaku. Field tambahan menunggu owner/privacy counsel per GUEST-D7 asli. Jika field display_name dianggap PII oleh privacy counsel, ia harus diklasifikasikan ulang dan mendapat perlakuan sesuai.
 
 ## Sumber eksternal GUEST-D7
 
@@ -177,3 +178,71 @@ Dokumentasi vendor dipakai sebagai pola pembanding, bukan persetujuan SOP Hotel 
 - Batas: tidak mengelola asset/costing, preventive schedule, pembelian, financial posting, guest data, atau room availability/status. Resolution tidak otomatis menjadikan kamar tersedia/bersih.
 - Revisi: property manager tinjau sebelum pilot. MySQL concurrency dan target deployment belum diverifikasi.
 - Risiko jika salah: workflow dapat berbeda dari SOP aktual; koreksi dilakukan sebagai work order baru tanpa menghapus riwayat.
+
+## D-004 — Keputusan sementara mata uang, pajak, dan pembulatan (sementara)
+
+- Status: keputusan teknis sementara untuk membuka implementasi lokal; bukan penetapan pajak final atau persetujuan akuntan.
+- Sumber primer: UU No. 1 Tahun 2022 tentang HKPD, khususnya Pasal 4, 50–51, 58, JDIH BPK: https://peraturan.bpk.go.id/Details/195696/uu-no-1-tahun-2022 ; PP No. 35 Tahun 2023 tentang Ketentuan Umum Pajak Daerah dan Retribusi Daerah: https://peraturan.bpk.go.id/Details/252130/pp-no-35-tahun-2023 ; UU No. 7 Tahun 2021 tentang Harmonisasi Peraturan Perpajakan, sebagaimana diubah UU No. 6 Tahun 2023: https://peraturan.bpk.go.id/Details/185162/uu-no-7-tahun-2021 ; PMK No. 70/PMK.03/2022 tentang jasa yang tidak dikenai PPN: https://jdih.kemenkeu.go.id/dok/pmk-70-pmk-03-2022 ; contoh Perda DKI Jakarta No. 1 Tahun 2024: https://peraturan.bpk.go.id/Details/279709/perda-prov-dki-jakarta-no-1-tahun-2024 . Tarif aktual bergantung Perda/Perkada lokasi hotel; contoh daerah bukan tarif nasional.
+- Keputusan sementara:
+  - Mata uang operasional: IDR, simpan seluruh nilai uang sebagai bilangan rupiah bulat; tanpa pecahan desimal. Format tampilan dapat memakai pemisah ribuan Indonesia, misalnya `Rp1.250.000`.
+  - PBJT: sebut **PBJT atas Jasa Perhotelan** (istilah lama "Pajak Hotel"/"PB1" jangan dipakai sebagai nama pajak baru). UU HKPD menetapkan batas tarif umum PBJT paling tinggi **10%**; tarif yang berlaku ditetapkan Perda. Tarif **10%** umum dijumpai pada Perda yang diperiksa, tetapi bukan angka otomatis bagi semua properti. Untuk perhitungan, simpan tarif efektif per properti dari Perda setempat yang telah diverifikasi; jangan hard-code 10% sebagai tarif nasional.
+  - Hotel/restoran: konsumsi makanan/minuman di restoran merupakan objek PBJT tersendiri; batas tarif umum juga 10%, dengan pengecualian/kriteria yang ditentukan UU dan aturan daerah. Tarif dan perlakuan restoran tidak otomatis mengikuti tarif jasa perhotelan. Jangan anggap tarif maksimum sebagai tarif aktual.
+  - PPN: jasa perhotelan yang termasuk objek pajak daerah tidak dikenai PPN. Namun transaksi/komponen berbeda—misalnya sewa ruang untuk selain acara/pertemuan atau jasa lain yang disebut dalam aturan—dapat memiliki perlakuan PPN berbeda. Jangan mengenakan PPN pada jasa kamar secara otomatis; tandai komponen lain untuk klasifikasi pajak terpisah. PPh bukan pajak konsumsi yang ditambahkan otomatis ke tagihan tamu; pemotongan/pelaporannya bergantung jenis transaksi dan status pihak.
+  - Pembulatan: semua nilai yang diposting ke folio, invoice, dan pembayaran adalah rupiah bulat. Hitung presisi internal tanpa pembulatan antara bila nilai pecahan muncul; bulatkan hanya pada batas posting sesuai kebijakan pembulatan yang disetujui akuntan. Untuk sementara gunakan pembulatan half-up ke rupiah terdekat pada tiap total pajak/baris yang diposting dan catat metode; jangan mengklaim metode ini sebagai ketentuan hukum.
+  - Nomor invoice: tidak ditemukan format nasional tunggal yang wajib untuk invoice komersial hotel dalam sumber yang diperiksa. Pakai nomor unik, berurutan, tidak dapat dipakai ulang, berlingkup properti dan tahun/periode; pola sementara `INV-{KODE_PROPERTI}-{YYYY}-{SEKUENS}`. Simpan tanggal, properti, dan nomor sebagai identitas tetap; pembatalan/void dicatat, bukan menghapus atau memakai ulang nomor. Faktur Pajak, bila relevan, harus mengikuti ketentuan DJP terpisah.
+  - Zona waktu: konfigurasi per properti dengan IANA timezone, mendukung `Asia/Jakarta` (WIB), `Asia/Makassar` (WITA), dan `Asia/Jayapura` (WIT). Simpan timestamp teknis secara konsisten dalam UTC; tanggal operasional, folio, cut-off, serta nomor periode dihitung menurut zona waktu properti.
+- Batas/revisi: sebelum mengaktifkan posting pajak/invoice di properti, pemilik dan akuntan harus mengonfirmasi Perda/Perkada yang berlaku, objek dan pengecualian, tarif setiap jenis layanan, harga termasuk/tidak termasuk pajak, transaksi campuran, perlakuan PPN/PPh, dasar dan titik pembulatan, serta kebutuhan dokumen pajak. Konfirmasi pula aturan nomor invoice dan kebijakan koreksi/void lokal. Validasi timezone properti sebelum operasi; perubahan timezone tidak boleh mengubah timestamp historis. **Jangan gunakan tarif 10% sebagai default produksi tanpa verifikasi daerah.**
+
+### Sumber eksternal D-004
+
+- UU No. 1 Tahun 2022 tentang HKPD: https://peraturan.bpk.go.id/Details/195696/uu-no-1-tahun-2022
+- PP No. 35 Tahun 2023: https://peraturan.bpk.go.id/Details/252130/pp-no-35-tahun-2023
+- UU No. 7 Tahun 2021 tentang HPP: https://peraturan.bpk.go.id/Details/185162/uu-no-7-tahun-2021
+- PMK No. 70/PMK.03/2022: https://jdih.kemenkeu.go.id/dok/pmk-70-pmk-03-2022
+- Perda DKI Jakarta No. 1/2024 (contoh daerah): https://peraturan.bpk.go.id/Details/279709/perda-prov-dki-jakarta-no-1-tahun-2024
+
+## D-005 — Keputusan sementara SOP reservasi dan stay (sementara)
+
+- Status: keputusan teknis sementara; bukan SOP Hotel Bome. Default deny-safe sampai pemilik mengonfirmasi kebijakan.
+- Sumber: Oracle OPERA Cloud — Reservations: https://docs.oracle.com/en/industries/hospitality/opera-cloud/26.3/ocsuh/ch_reservations.htm ; Managing Reservation Cancellation: https://docs.oracle.com/en/industries/hospitality/opera-cloud/24.1/ocsuh/t_managing_reservation_cancellation.htm ; Checking in Reservations: https://docs.oracle.com/en/industries/hospitality/opera-cloud/22.5/ocsuh/t_checking_in_reservations.htm ; Checking Out Reservations: https://docs.oracle.com/en/industries/hospitality/opera-cloud/25.3/ocsuh/t_checking_out_reservations.htm ; End of Day Reports: https://docs.oracle.com/en/industries/hospitality/opera-cloud/25.4/ocsuh/c_reports_end_of_day.htm ; Using the Housekeeping Board: https://docs.oracle.com/en/industries/hospitality/opera-cloud/23.2/ocsuh/t_housekeeping_using_the_housekeeping_board.htm .
+- Keputusan sementara:
+  - Status reservasi: gunakan `confirmed`, `checked_in`, `checked_out`, `cancelled`, dan `no_show` sebagai status lifecycle. `waitlisted` hanya antrean non-konfirmasi; tidak menjamin kamar atau mengurangi ketersediaan.
+  - Pembatalan: izinkan pembatalan sebelum check-in. Jangan otomatis mengenakan penalti atau mengembalikan deposit; catat pembatalan dan proses refund/retensi terpisah setelah otorisasi sesuai kebijakan yang disetujui.
+  - No-show: tandai setelah tanggal kedatangan berakhir dan petugas memverifikasi tamu belum check-in serta reservasi belum dibatalkan. Jangan otomatis menagih atau menahan deposit; eskalasi untuk keputusan manual.
+  - Deposit: opsional sementara. Jangan mewajibkan, menetapkan jumlah/jatuh tempo, atau melakukan refund/retensi otomatis. Catat pembayaran, saldo, dan tindakan refund/retensi sebagai transaksi terpisah yang dapat diaudit.
+  - Walk-in: boleh dibuat sebagai reservasi langsung, tetapi proses check-in tetap wajib melewati pemeriksaan eligibility, penetapan kamar ready, identitas, dan pencatatan pembayaran.
+  - Group booking: gunakan header grup untuk pengelompokan dan reservasi kamar individual untuk setiap kamar/tamu. Jangan anggap header sebagai alokasi kamar atau pembayaran bersama tanpa aturan eksplisit.
+  - Room share/move: dukung hanya melalui tautan tamu/reservasi dan penugasan kamar yang eksplisit. Catat pelaku, waktu, kamar asal/tujuan; larang perubahan yang menimbulkan okupansi atau konflik inventori.
+  - Overbooking: nonaktif secara default; jangan menerima reservasi melebihi inventori tersedia.
+  - Check-in: wajib ada reservasi yang eligible (termasuk walk-in yang baru dibuat), kamar tersedia dan berstatus ready/clean, serta identitas tamu dicatat. Jangan check-in ke kamar dirty, out-of-order, atau belum ditetapkan.
+  - Check-out: wajib meninjau dan menyelesaikan saldo sebelum checkout; pengecualian saldo terbuka memerlukan otorisasi eksplisit. Checkout memicu status kamar vacant-dirty atau tugas housekeeping, bukan ready otomatis.
+- Batas/revisi: belum ada keputusan Hotel Bome tentang jam batas dan prosedur Night Audit, penalti no-show/pembatalan, deposit dan metode refund, identitas yang diwajibkan, siapa berwenang menyetujui pengecualian, aturan grup/share/move, atau settlement saldo terbuka. Konfirmasi pemilik diperlukan sebelum kebijakan tersebut diaktifkan. Default ini bukan klaim kewajiban hukum lokal.
+
+### Sumber eksternal D-005
+
+- Oracle OPERA Cloud Reservations: https://docs.oracle.com/en/industries/hospitality/opera-cloud/26.3/ocsuh/ch_reservations.htm
+- Managing Cancellation: https://docs.oracle.com/en/industries/hospitality/opera-cloud/24.1/ocsuh/t_managing_reservation_cancellation.htm
+- Checking In: https://docs.oracle.com/en/industries/hospitality/opera-cloud/22.5/ocsuh/t_checking_in_reservations.htm
+- Checking Out: https://docs.oracle.com/en/industries/hospitality/opera-cloud/25.3/ocsuh/t_checking_out_reservations.htm
+- End of Day Reports: https://docs.oracle.com/en/industries/hospitality/opera-cloud/25.4/ocsuh/c_reports_end_of_day.htm
+
+## D-010 — Keputusan sementara finance controls, cashier, dan night audit (sementara)
+
+- Status: keputusan teknis sementara; konservatif sampai kebijakan pemilik dikonfirmasi.
+- Sumber: Oracle OPERA Cloud — End of Day controls: https://docs.oracle.com/en/industries/hospitality/opera-cloud/26.2/ocsuh/c_opera_controls_end_of_day.htm ; Closing Cashiers: https://docs.oracle.com/en/industries/hospitality/opera-cloud/24.4/ocsuh/t_cashiers_closure.htm ; Income Audit: https://docs.oracle.com/en/industries/hospitality/opera-cloud/26.3/ocsuh/c_endofday_income_audit.htm ; Charges Adjustment and Payments: https://docs.oracle.com/en/industries/hospitality/opera-cloud/26.4/ocsuh/c_postings_adjustments_postings_adjustments_and_payments_ch.htm ; Oracle OPERA 5 Close Cashier: https://docs.oracle.com/cd/E53547_01/opera_5_04_03_core_help/close_cashier.htm .
+- Keputusan sementara:
+  - **Business date:** tanggal operasional properti yang dipakai untuk posting dan pelaporan; tidak otomatis disamakan dengan tanggal kalender. Night audit memajukan business date. Zona waktu properti dan waktu mulai audit harus mengikuti konfigurasi properti; nilainya belum ditetapkan.
+  - **Cashier shift:** cashier harus dibuka sebelum transaksi kasir. Saat tutup, sistem merangkum transaksi per cashier dan tender, mencatat saldo awal, penerimaan, pengeluaran, jumlah aktual, dan selisih. Tutup memerlukan rekonsiliasi serta alasan selisih jika tidak seimbang. Laporan penutupan disimpan.
+  - **Tender:** catat cash, card, transfer, dan deposit sebagai jenis pembayaran terpisah. Deposit bukan pendapatan kamar; tampilkan sebagai transaksi tersendiri. Rekonsiliasi per shift harus memenuhi total tercatat per tender = total aktual/settlement yang dilaporkan; selisih tidak boleh disamarkan atau dihapus.
+  - **Night audit:** jalankan sebagai proses end-of-day terkontrol untuk business date aktif. Validasi transaksi dan status operasional dahulu; posting room charge dan pajak sesuai aturan tarif, transaksi, dan konfigurasi pajak yang berlaku. Simpan hasil proses dan laporan. Kegagalan atau ketidaksesuaian menghentikan penutupan untuk ditinjau, bukan dilewati otomatis.
+  - **Close/reopen:** penutupan business date mengunci tanggal itu dari perubahan rutin. Reopen hanya oleh supervisor berwenang, dengan alasan dan jejak audit; tidak mengubah atau menghapus riwayat posting. Jika Income Audit kelak dipakai, tanggal yang masih terbuka hanya dapat diselesaikan melalui alur audit dan urutan tanggal yang benar.
+  - **Adjustment/void:** jangan menghapus transaksi posted. Koreksi melalui reversal, refund, credit, atau adjustment baru yang merujuk transaksi asal, dengan alasan, pengguna, waktu, dan nilai tercatat. Pembatalan folio mengikuti alur void yang menjaga jejak dokumen.
+  - **Approval limits:** siapkan kontrol persetujuan berbasis peran untuk refund, void, dan discount; tindakan berisiko tinggi memerlukan persetujuan supervisor. Jangan tetapkan nominal atau persentase ambang sebelum pemilik menyetujuinya.
+- Batas/revisi: Oracle OPERA dirujuk sebagai pola produk, bukan bukti bahwa setiap kontrol cocok untuk hotel ini. Konfirmasi pemilik diperlukan untuk cutoff business date, jadwal dan urutan night audit, aturan pajak/room charge, toleransi selisih, kewenangan supervisor, ambang approval, serta perlakuan transfer dan deposit. Belum ada ambang angka atau aturan pajak lokal yang ditetapkan.
+
+### Sumber eksternal D-010
+
+- Oracle OPERA Cloud End of Day controls: https://docs.oracle.com/en/industries/hospitality/opera-cloud/26.2/ocsuh/c_opera_controls_end_of_day.htm
+- Closing Cashiers: https://docs.oracle.com/en/industries/hospitality/opera-cloud/24.4/ocsuh/t_cashiers_closure.htm
+- Income Audit: https://docs.oracle.com/en/industries/hospitality/opera-cloud/26.3/ocsuh/c_endofday_income_audit.htm
+- Charges Adjustment and Payments: https://docs.oracle.com/en/industries/hospitality/opera-cloud/26.4/ocsuh/c_postings_adjustments_postings_adjustments_and_payments_ch.htm

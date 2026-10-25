@@ -8,7 +8,7 @@ Status dan urutan resume bersumber dari `docs/product/MASTER_BUILD_PLAN.md` (mas
 | `OPS-001` | Runtime/bootstrap/health | PARTIAL app-level | Windows device/runtime/service/signer/pilot external |
 | `IAM-001` | Users/roles/property access | Local routes, query audit, membership/session tests and operator guidance verified (SQLite) | MySQL/Windows/browser, hotel SOP and external acceptance |
 | `PROP-001` | Property/outlet/room/status | PARTIAL CRUD/history; current app-defined tenant boundary/role denial locally verified | MySQL concurrency, browser/device acceptance, room-availability integration and hotel SOP |
-| `GUEST-001` | Guest/privacy/documents | NOT IMPLEMENTED; data-flow inventory and no-PII guardrails locally documented | D-007 field/purpose/legal-basis/retention approval before guest-data implementation |
+| `GUEST-001` | Guest/privacy/documents | PARTIAL: minimum operational profile (display_name, notes) implemented; full PII fields BLOCKED:D-007 | D-007 field/purpose/legal-basis/retention approval for PII beyond display name |
 | `RATE-001` | Rates/tax/availability | NOT IMPLEMENTED | D-004 accountant/owner |
 | `RES-001` | Booking/group/walk-in | NOT IMPLEMENTED | D-005 SOP + guest/rate |
 | `FO-001` | Stay lifecycle/front desk | NOT IMPLEMENTED | D-005 + reservation |
