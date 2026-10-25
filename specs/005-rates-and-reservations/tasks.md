@@ -17,7 +17,7 @@
 ## RES-001 — Reservation (future, after rate quote)
 
 - [x] RES-001-T01 Implement reservation state machine per D-005 provisional: confirmed → checked_in → checked_out; confirmed → cancelled (requires reason); confirmed → no_show. Walk-in creates confirmed + immediate check-in in single transaction. All transitions audited with immutable events (SQLite triggers prevent UPDATE/DELETE). Cross-property transition rejected. Uses guest ID reference (no PII per D-007). Evidence: `ReservationLifecycleTest` 14 tests/25 assertions; full suite 268/1235; Pint, PHPStan pass. SQLite only.
-- [ ] RES-001-T02 Model individual/group reservation with guest link, room assignment, rate snapshot, property scope, and change audit.
+- [x] RES-001-T02 Model individual/group reservation with guest link, room assignment, rate snapshot, property scope, and change audit. Reservation model with Property/Guest/RateSnapshot/Events relationships. Group reservation via `reservation_groups` table with property-scoped FK. Room reassignment with change audit event (records from/to room_id in JSON changes). Source tracking (walk_in/phone/online). Cross-property group rejected. Terminal-status reassignment rejected. Evidence: `ReservationModelTest` 10 tests/28 assertions; combined reservation tests 24/53; full suite 278/1263; Pint, PHPStan pass. SQLite only.
 - [ ] RES-001-T03 Implement authorized booking and room assignment flows after rate quote and availability service.
 - [ ] RES-001-T04 Test full lifecycle, concurrent booking, availability, tenant boundaries, historical changes, no-overbooking enforcement.
 
