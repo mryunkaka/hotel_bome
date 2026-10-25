@@ -17,5 +17,6 @@ Setiap feature tetap bounded; packages mengelompokkan dokumen, bukan menyatukan 
 | `specs/011-audit-foundation` | AUD-001 viewer slice | partial local viewer; broader taxonomy/retention in package 008 |
 | `specs/012-housekeeping-work-queue` | HK-001 provisional queue slice | partial; SOP/MySQL/pilot not accepted |
 | `specs/013-engineering-work-orders` | ENG-001 provisional work-order/asset slice | partial; SOP/MySQL/pilot not accepted |
+| `specs/014-ui-appearance` | UI-001 app-wide appearance controls and dark-mode contrast | active bounded UI slice; source uses Flux only; legacy reference is read-only |
 
 Task readiness wajib mencantumkan scope, prerequisites, acceptance, verification command, risks and status in the feature task file. Feature task files may be split into additional packages when slice independently releasable. Status claims must match evidence; simulator/SQLite/Linux tests do not prove external acceptance.

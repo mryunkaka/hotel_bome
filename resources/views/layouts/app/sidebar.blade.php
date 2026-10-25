@@ -38,7 +38,7 @@
     <flux:header class="lg:hidden">
         <flux:sidebar.toggle class="lg:hidden" icon="bars-2" inset="left" />
         <flux:spacer />
-        <flux:dropdown position="bottom" align="end">
+        <flux:dropdown position="bottom" align="end" x-data>
             <flux:profile :name="auth()->user()->name" :initials="auth()->user()->initials()" icon:trailing="chevron-down" />
             <flux:menu>
                 @if (auth()->user()->is_platform_admin)
@@ -50,6 +50,9 @@
                 @else
                     <flux:menu.item :href="route('my.properties.index')" icon="building-office-2" wire:navigate>{{ __('My properties') }}</flux:menu.item>
                 @endif
+                <flux:menu.separator />
+                <x-theme-mode-menu />
+                <flux:menu.separator />
                 <flux:menu.item :href="route('profile.edit')" icon="cog-6-tooth" wire:navigate>{{ __('Settings') }}</flux:menu.item>
                 <flux:menu.separator />
                 <form method="POST" action="{{ route('logout') }}">@csrf<flux:menu.item as="button" type="submit" icon="arrow-right-start-on-rectangle">{{ __('Log out') }}</flux:menu.item></form>

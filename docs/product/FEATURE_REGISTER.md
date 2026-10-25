@@ -28,5 +28,6 @@ Status dan urutan resume bersumber dari `docs/product/MASTER_BUILD_PLAN.md` (mas
 | `EXT-001` | OTA/payment/portal | NOT IMPLEMENTED | D-009 provider/contract |
 | `REL-001` | Signed release/license | NOT IMPLEMENTED | D-008, signer/entitlement |
 | `QA-001` | Pilot acceptance/release audit | NOT RUN | target environment + required feature gates |
+| `UI-001` | Authenticated appearance controls and dark-mode contrast | PARTIAL: controls, tests, and CSS build pass; visual browser acceptance pending | UI-002 page/navigation parity slices follow legacy reference `D:\Project\hotel-bome`; no Filament code is copied |
 
 Queue dan detailed phase acceptance: `MASTER_BUILD_PLAN.md` (MBP-002..004 DONE; lihat queue tersebut untuk status bukti, backlog dan satu-satunya next task). Package map: `FEATURE_SPEC_MAP.md`. Fase/rangka dependency: `ROADMAP.md`. Task implementasi rinci tetap di feature `tasks.md`; tidak ada feature module yang dianggap selesai hanya karena ada spec atau test historis.

@@ -1,5 +1,15 @@
 # Workflow state and Hermes handoff
 
+## Latest active feature — UI-001 appearance controls (2026-10-25)
+
+- Owner clarified the visual reference as `D:\Project\hotel-bome` and requested a visible Light/Dark/System default selector plus dark-mode contrast fixes. The reference checkout is read-only; the implementation target remains the Laravel + Livewire + Tailwind + Flux rebuild.
+- Current local `main` is `d86b264`, synchronized with `origin/main`; preserve untracked `docs/product/BASELINE_EVIDENCE.md`, `packages/flux-pro-2.20.1.zip`, and `tmp/`.
+- Root cause evidence for `/admin/users/memberships`: Blade has `dark:bg-amber-950 dark:text-amber-100`, but there is no `public/hot`; the served `public/build/assets/app-aFrivcIn.css` was last written 2026-10-17 and lacks both selectors. The latest membership view source is from 2026-10-24. Existing Settings already has Light/Dark/System controls via Flux; global desktop/mobile menus do not.
+- Added `specs/014-ui-appearance/{spec,plan,tasks,acceptance}.md` and shared `theme-mode-menu` used by desktop/mobile account menus. Flux Light/Dark/System default choices now appear in both; the settings label is “System default”.
+- TDD evidence: the new `AppearanceThemeTest` first failed on the missing menu choices and label, then passed 3 tests/13 assertions after implementation. Full `composer test --no-interaction` passed 194 tests/979 assertions; Pint passed and PHPStan reported 0 errors.
+- Local PHP CLI ran `npm run build` via Node 24.22.1; Vite/Vite Plus passed 22 modules. The refreshed app CSS contains `dark:bg-amber-950` and `dark:text-amber-100`. `/login` references the new hash and the CSS asset returns HTTP 200. `git diff --check` passed.
+- T006 remains open for visual authenticated-browser review (dark/light/system at desktop/mobile); no Windows computer-use connector is available in this session, so do not claim visual acceptance. `public/build` is ignored and must not be staged. User-owned baseline evidence, Flux archive, and `tmp/` remain untouched.
+
 ## Latest checkpoint — single mainline consolidation (2026-10-25)
 
 - Owner directs routine work on one active branch, `main`, with tests before direct push. Canonical VPS checkout `/home/saidadam28/workspace/hotel_bome_workflow` is on `main`; local `D:\Project\hotel_new` is synchronized to the same remote commit.
