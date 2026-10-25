@@ -7,10 +7,12 @@ use App\Models\User;
 use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
+use Tests\Concerns\CreatesFailingDatabaseTriggers;
 use Tests\TestCase;
 
 class UserMembershipManagementTest extends TestCase
 {
+    use CreatesFailingDatabaseTriggers;
     use RefreshDatabase;
 
     public function test_only_platform_admin_can_open_membership_manager_and_assign_active_user(): void
@@ -176,7 +178,7 @@ class UserMembershipManagementTest extends TestCase
         $staff->setRememberToken('rollback-membership-token');
         $staff->save();
         $property = Property::factory()->create();
-        DB::unprepared("CREATE TRIGGER fail_membership_audit BEFORE INSERT ON property_membership_events BEGIN SELECT RAISE(ABORT, 'forced audit failure'); END");
+        $this->createFailingInsertTrigger('fail_membership_audit', 'property_membership_events', 'forced audit failure');
         $this->withoutExceptionHandling();
 
         try {
@@ -193,6 +195,8 @@ class UserMembershipManagementTest extends TestCase
             ]);
             $this->assertDatabaseHas('users', ['id' => $staff->id, 'remember_token' => 'rollback-membership-token']);
             $this->assertDatabaseCount('property_membership_events', 0);
+        } finally {
+            $this->dropTestTrigger('fail_membership_audit');
         }
     }
 
@@ -216,7 +220,7 @@ class UserMembershipManagementTest extends TestCase
             'role' => 'housekeeping',
         ]);
 
-        DB::unprepared("CREATE TRIGGER fail_membership_audit BEFORE INSERT ON property_membership_events BEGIN SELECT RAISE(ABORT, 'forced audit failure'); END");
+        $this->createFailingInsertTrigger('fail_membership_audit', 'property_membership_events', 'forced audit failure');
         $this->withoutExceptionHandling();
 
         try {
@@ -236,6 +240,8 @@ class UserMembershipManagementTest extends TestCase
                 'remember_token' => 'rollback-revoke-token',
             ]);
             $this->assertDatabaseCount('property_membership_events', 0);
+        } finally {
+            $this->dropTestTrigger('fail_membership_audit');
         }
     }
 

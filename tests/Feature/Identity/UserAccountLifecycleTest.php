@@ -7,10 +7,12 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Tests\Concerns\CreatesFailingDatabaseTriggers;
 use Tests\TestCase;
 
 class UserAccountLifecycleTest extends TestCase
 {
+    use CreatesFailingDatabaseTriggers;
     use RefreshDatabase;
 
     public function test_platform_admin_can_suspend_and_reactivate_another_account_with_audit(): void
@@ -121,7 +123,7 @@ class UserAccountLifecycleTest extends TestCase
         $target->setRememberToken('rollback-account-token');
         $target->save();
         $version = $target->auth_version;
-        DB::unprepared("CREATE TRIGGER fail_user_account_audit BEFORE INSERT ON user_account_events BEGIN SELECT RAISE(ABORT, 'forced audit failure'); END");
+        $this->createFailingInsertTrigger('fail_user_account_audit', 'user_account_events', 'forced audit failure');
 
         try {
             $this->actingAs($admin)
@@ -135,7 +137,7 @@ class UserAccountLifecycleTest extends TestCase
             ]);
             $this->assertDatabaseCount('user_account_events', 0);
         } finally {
-            DB::unprepared('DROP TRIGGER IF EXISTS fail_user_account_audit');
+            $this->dropTestTrigger('fail_user_account_audit');
         }
     }
 

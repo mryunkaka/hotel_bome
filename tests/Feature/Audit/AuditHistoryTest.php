@@ -249,8 +249,9 @@ class AuditHistoryTest extends TestCase
         $property = Property::factory()->create();
         $createdAt = '2026-06-02 12:00:00';
 
+        $userAccessIds = [];
         foreach ([1, 2] as $i) {
-            DB::table('user_access_events')->insert([
+            $userAccessIds[] = DB::table('user_access_events')->insertGetId([
                 'actor_id' => $admin->id,
                 'user_id' => $subject->id,
                 'property_id' => $property->id,
@@ -260,7 +261,7 @@ class AuditHistoryTest extends TestCase
                 'created_at' => $createdAt,
             ]);
         }
-        DB::table('property_membership_events')->insert([
+        $membershipId = DB::table('property_membership_events')->insertGetId([
             'actor_id' => $admin->id,
             'user_id' => $subject->id,
             'property_id' => $property->id,
@@ -276,7 +277,7 @@ class AuditHistoryTest extends TestCase
             ->map(fn (object $event): string => $event->source.':'.$event->source_id)
             ->all();
 
-        $this->assertSame(['membership:1', 'user_access:2', 'user_access:1'], $keys);
+        $this->assertSame(["membership:{$membershipId}", "user_access:{$userAccessIds[1]}", "user_access:{$userAccessIds[0]}"], $keys);
     }
 
     public function test_source_and_property_filters_select_only_matching_events(): void

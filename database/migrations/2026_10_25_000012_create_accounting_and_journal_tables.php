@@ -54,31 +54,18 @@ return new class extends Migration
         });
 
         // Triggers to enforce immutability on journal_entries and journal_lines
-        DB::unprepared(<<<'SQL'
-            CREATE TRIGGER journal_entries_no_update
-            BEFORE UPDATE ON journal_entries
-            BEGIN
-                SELECT RAISE(ABORT, 'journal_entries is immutable: UPDATE not allowed');
-            END;
-
-            CREATE TRIGGER journal_entries_no_delete
-            BEFORE DELETE ON journal_entries
-            BEGIN
-                SELECT RAISE(ABORT, 'journal_entries is immutable: DELETE not allowed');
-            END;
-
-            CREATE TRIGGER journal_lines_no_update
-            BEFORE UPDATE ON journal_lines
-            BEGIN
-                SELECT RAISE(ABORT, 'journal_lines is immutable: UPDATE not allowed');
-            END;
-
-            CREATE TRIGGER journal_lines_no_delete
-            BEFORE DELETE ON journal_lines
-            BEGIN
-                SELECT RAISE(ABORT, 'journal_lines is immutable: DELETE not allowed');
-            END;
-        SQL);
+        foreach (['journal_entries', 'journal_lines'] as $tableName) {
+            foreach (['UPDATE', 'DELETE'] as $operation) {
+                $name = $tableName.'_no_'.strtolower($operation);
+                $message = "{$tableName} is immutable: {$operation} not allowed";
+                $sql = match (DB::getDriverName()) {
+                    'sqlite' => "CREATE TRIGGER {$name} BEFORE {$operation} ON {$tableName} BEGIN SELECT RAISE(ABORT, '{$message}'); END",
+                    'mysql' => "CREATE TRIGGER {$name} BEFORE {$operation} ON {$tableName} FOR EACH ROW SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '{$message}'",
+                    default => throw new RuntimeException('Accounting immutability triggers are unsupported for this database driver.'),
+                };
+                DB::unprepared($sql);
+            }
+        }
     }
 
     public function down(): void

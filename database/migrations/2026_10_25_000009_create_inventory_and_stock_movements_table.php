@@ -43,19 +43,16 @@ return new class extends Migration
         });
 
         // Trigger to enforce immutability on stock_movements
-        DB::unprepared(<<<'SQL'
-            CREATE TRIGGER stock_movements_no_update
-            BEFORE UPDATE ON stock_movements
-            BEGIN
-                SELECT RAISE(ABORT, 'stock_movements is immutable: UPDATE not allowed');
-            END;
-
-            CREATE TRIGGER stock_movements_no_delete
-            BEFORE DELETE ON stock_movements
-            BEGIN
-                SELECT RAISE(ABORT, 'stock_movements is immutable: DELETE not allowed');
-            END;
-        SQL);
+        foreach (['UPDATE', 'DELETE'] as $operation) {
+            $name = 'stock_movements_no_'.strtolower($operation);
+            $message = "stock_movements is immutable: {$operation} not allowed";
+            $sql = match (DB::getDriverName()) {
+                'sqlite' => "CREATE TRIGGER {$name} BEFORE {$operation} ON stock_movements BEGIN SELECT RAISE(ABORT, '{$message}'); END",
+                'mysql' => "CREATE TRIGGER {$name} BEFORE {$operation} ON stock_movements FOR EACH ROW SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '{$message}'",
+                default => throw new RuntimeException('Stock movement triggers are unsupported for this database driver.'),
+            };
+            DB::unprepared($sql);
+        }
     }
 
     public function down(): void

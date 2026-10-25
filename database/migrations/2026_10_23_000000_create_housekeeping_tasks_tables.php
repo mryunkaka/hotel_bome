@@ -38,7 +38,6 @@ return new class extends Migration
             $table->unsignedBigInteger('assigned_to_after')->nullable();
             $table->foreign('assigned_to_before')->references('id')->on('users')->restrictOnDelete();
             $table->foreign('assigned_to_after')->references('id')->on('users')->restrictOnDelete();
-            $table->foreign('actor_id')->references('id')->on('users')->restrictOnDelete();
             $table->string('reason', 500)->nullable();
             $table->timestamp('created_at');
             $table->foreign(['property_id', 'task_id'])->references(['property_id', 'id'])->on('housekeeping_tasks')->restrictOnDelete();

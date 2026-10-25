@@ -30,21 +30,15 @@ return new class extends Migration
         });
 
         // Immutable: reject UPDATE and DELETE
-        DB::unprepared("
-            CREATE TRIGGER rate_snapshots_no_update
-            BEFORE UPDATE ON rate_snapshots
-            BEGIN
-                SELECT RAISE(ABORT, 'rate_snapshots rows are immutable');
-            END;
-        ");
-
-        DB::unprepared("
-            CREATE TRIGGER rate_snapshots_no_delete
-            BEFORE DELETE ON rate_snapshots
-            BEGIN
-                SELECT RAISE(ABORT, 'rate_snapshots rows are immutable');
-            END;
-        ");
+        foreach (['UPDATE', 'DELETE'] as $operation) {
+            $name = 'rate_snapshots_no_'.strtolower($operation);
+            $sql = match (DB::getDriverName()) {
+                'sqlite' => "CREATE TRIGGER {$name} BEFORE {$operation} ON rate_snapshots BEGIN SELECT RAISE(ABORT, 'rate_snapshots rows are immutable'); END",
+                'mysql' => "CREATE TRIGGER {$name} BEFORE {$operation} ON rate_snapshots FOR EACH ROW SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'rate_snapshots rows are immutable'",
+                default => throw new RuntimeException('Rate snapshot immutability triggers are unsupported for this database driver.'),
+            };
+            DB::unprepared($sql);
+        }
     }
 
     public function down(): void

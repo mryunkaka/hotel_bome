@@ -68,31 +68,18 @@ return new class extends Migration
         });
 
         // Triggers to enforce immutability on snapshots and reopen records
-        DB::unprepared(<<<'SQL'
-            CREATE TRIGGER day_closing_snapshots_no_update
-            BEFORE UPDATE ON day_closing_snapshots
-            BEGIN
-                SELECT RAISE(ABORT, 'day_closing_snapshots is immutable: UPDATE not allowed');
-            END;
-
-            CREATE TRIGGER day_closing_snapshots_no_delete
-            BEFORE DELETE ON day_closing_snapshots
-            BEGIN
-                SELECT RAISE(ABORT, 'day_closing_snapshots is immutable: DELETE not allowed');
-            END;
-
-            CREATE TRIGGER business_date_reopens_no_update
-            BEFORE UPDATE ON business_date_reopens
-            BEGIN
-                SELECT RAISE(ABORT, 'business_date_reopens is immutable: UPDATE not allowed');
-            END;
-
-            CREATE TRIGGER business_date_reopens_no_delete
-            BEFORE DELETE ON business_date_reopens
-            BEGIN
-                SELECT RAISE(ABORT, 'business_date_reopens is immutable: DELETE not allowed');
-            END;
-        SQL);
+        foreach (['day_closing_snapshots', 'business_date_reopens'] as $tableName) {
+            foreach (['UPDATE', 'DELETE'] as $operation) {
+                $name = $tableName.'_no_'.strtolower($operation);
+                $message = "{$tableName} is immutable: {$operation} not allowed";
+                $sql = match (DB::getDriverName()) {
+                    'sqlite' => "CREATE TRIGGER {$name} BEFORE {$operation} ON {$tableName} BEGIN SELECT RAISE(ABORT, '{$message}'); END",
+                    'mysql' => "CREATE TRIGGER {$name} BEFORE {$operation} ON {$tableName} FOR EACH ROW SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '{$message}'",
+                    default => throw new RuntimeException('Cashier immutability triggers are unsupported for this database driver.'),
+                };
+                DB::unprepared($sql);
+            }
+        }
     }
 
     public function down(): void

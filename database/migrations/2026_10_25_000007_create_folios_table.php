@@ -69,43 +69,18 @@ return new class extends Migration
         });
 
         // Immutable triggers for charges, payments, and invoices
-        DB::unprepared(<<<'SQL'
-            CREATE TRIGGER folio_charges_no_update
-            BEFORE UPDATE ON folio_charges
-            BEGIN
-                SELECT RAISE(ABORT, 'folio_charges is immutable: UPDATE not allowed');
-            END;
-
-            CREATE TRIGGER folio_charges_no_delete
-            BEFORE DELETE ON folio_charges
-            BEGIN
-                SELECT RAISE(ABORT, 'folio_charges is immutable: DELETE not allowed');
-            END;
-
-            CREATE TRIGGER folio_payments_no_update
-            BEFORE UPDATE ON folio_payments
-            BEGIN
-                SELECT RAISE(ABORT, 'folio_payments is immutable: UPDATE not allowed');
-            END;
-
-            CREATE TRIGGER folio_payments_no_delete
-            BEFORE DELETE ON folio_payments
-            BEGIN
-                SELECT RAISE(ABORT, 'folio_payments is immutable: DELETE not allowed');
-            END;
-
-            CREATE TRIGGER invoices_no_update
-            BEFORE UPDATE ON invoices
-            BEGIN
-                SELECT RAISE(ABORT, 'invoices is immutable: UPDATE not allowed');
-            END;
-
-            CREATE TRIGGER invoices_no_delete
-            BEFORE DELETE ON invoices
-            BEGIN
-                SELECT RAISE(ABORT, 'invoices is immutable: DELETE not allowed');
-            END;
-        SQL);
+        foreach (['folio_charges', 'folio_payments', 'invoices'] as $tableName) {
+            foreach (['UPDATE', 'DELETE'] as $operation) {
+                $name = $tableName.'_no_'.strtolower($operation);
+                $message = "{$tableName} is immutable: {$operation} not allowed";
+                $sql = match (DB::getDriverName()) {
+                    'sqlite' => "CREATE TRIGGER {$name} BEFORE {$operation} ON {$tableName} BEGIN SELECT RAISE(ABORT, '{$message}'); END",
+                    'mysql' => "CREATE TRIGGER {$name} BEFORE {$operation} ON {$tableName} FOR EACH ROW SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '{$message}'",
+                    default => throw new RuntimeException('Folio immutability triggers are unsupported for this database driver.'),
+                };
+                DB::unprepared($sql);
+            }
+        }
     }
 
     public function down(): void

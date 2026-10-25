@@ -52,21 +52,15 @@ return new class extends Migration
         });
 
         // Immutable event log
-        DB::unprepared("
-            CREATE TRIGGER reservation_events_no_update
-            BEFORE UPDATE ON reservation_events
-            BEGIN
-                SELECT RAISE(ABORT, 'reservation_events rows are immutable');
-            END;
-        ");
-
-        DB::unprepared("
-            CREATE TRIGGER reservation_events_no_delete
-            BEFORE DELETE ON reservation_events
-            BEGIN
-                SELECT RAISE(ABORT, 'reservation_events rows are immutable');
-            END;
-        ");
+        foreach (['UPDATE', 'DELETE'] as $operation) {
+            $name = 'reservation_events_no_'.strtolower($operation);
+            $sql = match (DB::getDriverName()) {
+                'sqlite' => "CREATE TRIGGER {$name} BEFORE {$operation} ON reservation_events BEGIN SELECT RAISE(ABORT, 'reservation_events rows are immutable'); END",
+                'mysql' => "CREATE TRIGGER {$name} BEFORE {$operation} ON reservation_events FOR EACH ROW SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'reservation_events rows are immutable'",
+                default => throw new RuntimeException('Reservation event triggers are unsupported for this database driver.'),
+            };
+            DB::unprepared($sql);
+        }
     }
 
     public function down(): void

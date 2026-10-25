@@ -37,19 +37,16 @@ return new class extends Migration
         });
 
         // Immutable triggers for stay_events
-        DB::unprepared(<<<'SQL'
-            CREATE TRIGGER stay_events_no_update
-            BEFORE UPDATE ON stay_events
-            BEGIN
-                SELECT RAISE(ABORT, 'stay_events is immutable: UPDATE not allowed');
-            END;
-
-            CREATE TRIGGER stay_events_no_delete
-            BEFORE DELETE ON stay_events
-            BEGIN
-                SELECT RAISE(ABORT, 'stay_events is immutable: DELETE not allowed');
-            END;
-        SQL);
+        foreach (['UPDATE', 'DELETE'] as $operation) {
+            $name = 'stay_events_no_'.strtolower($operation);
+            $message = "stay_events is immutable: {$operation} not allowed";
+            $sql = match (DB::getDriverName()) {
+                'sqlite' => "CREATE TRIGGER {$name} BEFORE {$operation} ON stay_events BEGIN SELECT RAISE(ABORT, '{$message}'); END",
+                'mysql' => "CREATE TRIGGER {$name} BEFORE {$operation} ON stay_events FOR EACH ROW SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '{$message}'",
+                default => throw new RuntimeException('Stay event triggers are unsupported for this database driver.'),
+            };
+            DB::unprepared($sql);
+        }
     }
 
     public function down(): void

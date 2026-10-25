@@ -7,10 +7,12 @@ use App\Models\User;
 use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
+use Tests\Concerns\CreatesFailingDatabaseTriggers;
 use Tests\TestCase;
 
 class UserApprovalTest extends TestCase
 {
+    use CreatesFailingDatabaseTriggers;
     use RefreshDatabase;
 
     public function test_platform_admin_sees_pending_accounts_and_can_approve_with_scope_role_and_reason(): void
@@ -228,7 +230,7 @@ class UserApprovalTest extends TestCase
         $admin = User::factory()->create(['is_platform_admin' => true]);
         $pending = User::factory()->create(['status' => 'pending']);
         $property = Property::query()->create(['name' => 'Test Hotel', 'code' => 'TEST']);
-        DB::unprepared("CREATE TRIGGER reject_user_access_event BEFORE INSERT ON user_access_events BEGIN SELECT RAISE(ABORT, 'simulated audit write failure'); END");
+        $this->createFailingInsertTrigger('reject_user_access_event', 'user_access_events', 'simulated audit write failure');
 
         $this->withoutExceptionHandling();
 
@@ -243,6 +245,8 @@ class UserApprovalTest extends TestCase
             $this->assertDatabaseHas('users', ['id' => $pending->id, 'status' => 'pending']);
             $this->assertDatabaseMissing('property_user', ['user_id' => $pending->id]);
             $this->assertDatabaseCount('user_access_events', 0);
+        } finally {
+            $this->dropTestTrigger('reject_user_access_event');
         }
     }
 
