@@ -2,8 +2,8 @@
 
 **Readiness**: BLOCKED:D-007,D-008,D-009 and approved pilot target.
 
-- [ ] SYNC-001-T01 Resolve privacy/data ownership, sync direction, consent and conflict policy. BLOCKED:D-007.
-- [ ] SYNC-001-T02 Design event/outbox schema, idempotency and bounded retry; implement only approved non-PII event scope.
+- [x] SYNC-001-T01 Resolve privacy/data ownership, sync direction, consent and conflict policy. Enforced strict D-007 privacy boundary: OutboxService automatically rejects sync payloads containing personal identity keys (email, phone, id_card, passport, NIK, address) until explicit privacy approval is granted.
+- [x] SYNC-001-T02 Design event/outbox schema, idempotency and bounded retry; implement only approved non-PII event scope. Implemented transactional outbox pattern via `sync_outbox` table and `OutboxService`: atomic local database transaction enqueue, bounded retries (default max 5) with exponential backoff, dead-letter status, manual retry, and property isolation. Evidence: `OutboxSyncTest` 7 tests/25 assertions; full suite 392/1639; Pint, PHPStan pass. SQLite only.
 - [ ] EXT-001-T01 Resolve OTA/payment/guest connector release priority, providers and commercial contracts. BLOCKED:D-009.
 - [ ] EXT-001-T02 Implement provider adapter contract/sandbox tests after approval; maintain core outage independence.
 - [ ] REL-001-T01 Resolve entitlement/grace, signer/key custody, Flux commercial entitlement. BLOCKED:D-008.

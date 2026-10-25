@@ -24,7 +24,7 @@ Status dan urutan resume bersumber dari `docs/product/MASTER_BUILD_PLAN.md` (mas
 | `POS-001` | Local POS/room service | COMPLETE: PosService with local outlets, order items, direct payment, and idempotent in-house room charge billing to FolioService. 5 tests/17 assertions | Reconciles to FolioService; offline-safe; external provider integration optional |
 | `ACC-001` | Accounting | COMPLETE: JournalService with ChartOfAccount, balanced double-entry JournalEntry/JournalLine (triggers), reversals, and Night Audit mapping. 6 tests/23 assertions | Reconciles to NightAuditService closing snapshot; accountant signoff remains external |
 | `HW-001` | Doorlock/RFID | NOT IMPLEMENTED | D-006, vendor/license/device |
-| `SYNC-001` | Outbox/central sync | NOT IMPLEMENTED | D-007 privacy/conflict policy |
+| `SYNC-001` | Outbox/central sync | COMPLETE: Transactional outbox engine with OutboxService, bounded retries, exponential backoff, dead-letter failed status, and D-007 PII rejection guard. 7 tests/25 assertions | WAN-outage safe; guest PII strictly excluded per D-007 |
 | `EXT-001` | OTA/payment/portal | NOT IMPLEMENTED | D-009 provider/contract |
 | `REL-001` | Signed release/license | NOT IMPLEMENTED | D-008, signer/entitlement |
 | `QA-001` | Pilot acceptance/release audit | NOT RUN | target environment + required feature gates |
