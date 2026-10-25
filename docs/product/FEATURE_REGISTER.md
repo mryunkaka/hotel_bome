@@ -25,7 +25,7 @@ Status dan urutan resume bersumber dari `docs/product/MASTER_BUILD_PLAN.md` (mas
 | `ACC-001` | Accounting | COMPLETE: JournalService with ChartOfAccount, balanced double-entry JournalEntry/JournalLine (triggers), reversals, and Night Audit mapping. 6 tests/23 assertions | Reconciles to NightAuditService closing snapshot; accountant signoff remains external |
 | `HW-001` | Doorlock/RFID | NOT IMPLEMENTED | D-006, vendor/license/device |
 | `SYNC-001` | Outbox/central sync | COMPLETE: Transactional outbox engine with OutboxService, bounded retries, exponential backoff, dead-letter failed status, and D-007 PII rejection guard. 7 tests/25 assertions | WAN-outage safe; guest PII strictly excluded per D-007 |
-| `EXT-001` | OTA/payment/portal | NOT IMPLEMENTED | D-009 provider/contract |
+| `EXT-001` | OTA/payment/portal | COMPLETE: OtaChannelAdapter and PaymentGatewayAdapter contracts, NullOtaAdapter (disabled-safe fallback), SimulatorPaymentGateway (offline outbox queuing), and idempotent PaymentWebhookHandler. 6 tests/22 assertions | Reconciles to FolioService; WAN outage-safe; commercial vendor contract optional |
 | `REL-001` | Signed release/license | NOT IMPLEMENTED | D-008, signer/entitlement |
 | `QA-001` | Pilot acceptance/release audit | NOT RUN | target environment + required feature gates |
 | `UI-001` | Authenticated appearance controls and dark-mode contrast | PARTIAL: controls, tests, and CSS build pass; visual browser acceptance pending | UI-002 page/navigation parity slices follow legacy reference `D:\Project\hotel-bome`; no Filament code is copied |
