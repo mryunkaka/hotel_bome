@@ -1,8 +1,12 @@
 # Konstitusi Project Hotel PMS
 
+## Amendemen workflow 2026-10-25
+
+Pemilik menetapkan `main` sebagai satu-satunya branch kerja aktif: lakukan task pada checkout VPS canonical, jalankan test/check, lalu commit path yang ditinjau dan push langsung ke `origin/main` setelah lulus. Jangan membuat branch/worktree rutin atau force-push. Preserve dan bandingkan checkout lama yang dirty sebelum menyatukannya. Push kode tidak sama dengan deployment live. Amendemen ini menggantikan arahan branch-only `work/hermes-full-build` dan larangan push main di amendemen lama.
+
 ## Amendemen eksekusi 2026-10-18
 
-Mandat eksplisit pemilik dalam `docs/HERMES_AUTONOMOUS_BUILD.md` mengizinkan Hermes mengambil peran perencanaan, riset keputusan sementara, implementasi dan pengujian pada branch integrasi `work/hermes-full-build`. Requirement yang belum dikonfirmasi tetap diberi provenance sebagai keputusan sementara; approval legal/accountant/vendor dan hasil physical acceptance tidak boleh dikarang. Semua prinsip inti di bawah tetap berlaku. Pembatasan pembagian peran/baseline lama yang bertentangan dengan mandat ini digantikan hanya dalam scope branch integrasi tersebut.
+Mandat eksplisit pemilik dalam `docs/HERMES_AUTONOMOUS_BUILD.md` mengizinkan Hermes mengambil peran perencanaan, riset keputusan sementara, implementasi dan pengujian berkelanjutan. Requirement yang belum dikonfirmasi tetap diberi provenance sebagai keputusan sementara; approval legal/accountant/vendor dan hasil physical acceptance tidak boleh dikarang. Semua prinsip inti di bawah tetap berlaku.
 
 ## Prinsip inti
 
@@ -38,7 +42,7 @@ Runtime, asset, font, script, dan dependency harus tersedia lokal. Tambahkan Red
 
 - docs/AI_PROJECT_CONTEXT.md dan docs/REBUILD_PLAN.md adalah sumber discovery produk. Pertanyaan yang belum terjawab tetap terbuka sampai pemilik atau keputusan terdokumentasi menyelesaikannya.
 - Setiap fitur memiliki spec terbatas, technical plan, task yang dapat dikerjakan, dan acceptance criteria yang dapat diverifikasi sebelum implementasi.
-- Codex menyiapkan dan mereview; Hermes mengimplementasikan task ready pada fitur aktif dan melaporkan evidence. Semua agent menjaga perubahan lain dan tidak push langsung ke main.
+- Codex/Hermes bekerja pada `main` sesuai mandat pemilik 2026-10-25; lakukan review dan pemeriksaan sebelum push langsung ke main. Jaga perubahan lain, jangan force-push, dan jangan menyamakan push dengan deployment.
 - Uji UI, persistence, authorization, security, dan recovery sesuai scope acceptance. Tandai test selesai hanya setelah lulus aktual.
 - Ubah prinsip ini hanya dengan alasan terdokumentasi dan maksud pemilik. Jangan mengubah rekomendasi sementara menjadi aturan permanen tanpa bukti.
 

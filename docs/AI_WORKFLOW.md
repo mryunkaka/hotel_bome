@@ -1,5 +1,9 @@
 # Workflow AI: Codex lokal ke Hermes VPS lalu kembali ke Codex
 
+## Pembaruan mandat 2026-10-25 — mainline tunggal
+
+Pemilik menetapkan `main` sebagai satu-satunya branch kerja aktif. Lanjutkan dari checkout canonical VPS `/home/saidadam28/workspace/hotel_bome_workflow`; jangan membuat branch/worktree task baru. Setelah pemeriksaan fitur lulus, commit path yang ditinjau dan push langsung ke `origin/main` tanpa force-push. Pertahankan checkout lama yang masih dirty sampai seluruh perbedaannya dibandingkan dan disatukan; jangan menimpa pekerjaan lokal. Push ke `main` bukan izin deploy ke aplikasi live. Ketentuan branch `work/hermes-full-build` di pembaruan 2026-10-18 di bawah telah digantikan.
+
 ## Pembaruan mandat 2026-10-18
 
 Pada branch `work/hermes-full-build`, `docs/HERMES_AUTONOMOUS_BUILD.md` berlaku untuk eksekusi otonom. Pemilik mengizinkan Hermes menyusun/menganalisis task, meriset dan mencatat keputusan sementara, mengimplementasikan dan menguji tanpa menunggu Codex di setiap slice. Kriteria bukti, keamanan, isolasi, integritas keuangan dan lisensi tetap berlaku. Gate yang benar-benar memerlukan sumber eksternal dicatat dan tidak menghentikan pekerjaan independen.

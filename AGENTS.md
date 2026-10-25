@@ -1,5 +1,9 @@
 # Instruksi kerja project Hotel PMS
 
+## Mandat terbaru 2026-10-25 — satu alur `main`
+
+Pemilik mengarahkan agar `main` menjadi satu-satunya branch kerja aktif: lanjutkan pekerjaan di checkout VPS canonical `/home/saidadam28/workspace/hotel_bome_workflow` pada `main`, jalankan pemeriksaan yang sesuai, lalu commit path yang ditinjau dan push langsung ke `origin/main` setelah lulus. Jangan membuat branch fitur atau worktree baru untuk task rutin dan jangan force-push. Checkout lama yang masih dirty harus dipertahankan sampai isinya dibandingkan dan disatukan dengan bukti; push ke `main` tidak berarti deploy ke server live. Mandat ini menggantikan pembatasan branch lama di bawah.
+
 ## Mandat terbaru 2026-10-18
 
 Untuk branch `work/hermes-full-build`, baca `docs/HERMES_AUTONOMOUS_BUILD.md`. Pemilik mendelegasikan perencanaan, riset keputusan sementara, implementasi dan pengujian berkelanjutan kepada Hermes. Mandat tersebut menggantikan batas DISC-001 saja, kewajiban menunggu Codex per task, dan gate keputusan rutin pada dokumen lama. Keputusan eksternal/legal/hardware tetap dilaporkan sesuai bukti; jangan mengarang persetujuan atau hasil. Semua prinsip keamanan/data/lisensi tetap berlaku.

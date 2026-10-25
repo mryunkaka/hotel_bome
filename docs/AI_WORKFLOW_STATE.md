@@ -1,5 +1,13 @@
 # Workflow state and Hermes handoff
 
+## Latest checkpoint — single mainline consolidation (2026-10-25)
+
+- Owner directs routine work on one active branch, `main`, with tests before direct push. Canonical VPS checkout `/home/saidadam28/workspace/hotel_bome_workflow` is on `main`; local `D:\Project\hotel_new` is synchronized to the same remote commit.
+- The GitHub `main` snapshot already contained the `/setup/first-admin` wizard and the current application/test files. The old VPS `work/hermes-full-build` working tree was compared file-by-file; application code, views, migrations, feature specs, and tests matched `main`. Its two newer documentation lines were corrected and committed.
+- Verification on VPS: `composer test --no-interaction` exit 0, Pint and PHPStan included, PHPUnit 191 tests / 966 assertions using SQLite in-memory. Composer emits PHP 8.4 deprecation notices from system dependencies. This does not cover browser, MySQL, Windows/LAN, SOP, or hardware acceptance.
+- Pushed `09ee3e8` (`docs-sync-verified-mainline-checkpoint`) and `36f692b` (`remove-obsolete-flux-package-artifact`) directly to `origin/main`. The obsolete tracked Flux Pro 2.20.0 archive was removed from the current tree; the owner’s 2.20.1 archive remains local/untracked and was not staged.
+- Existing `/home/saidadam28/workspace/hotel_bome` checkout still has staged Spec Kit/workflow changes and an untracked Flux archive; it was preserved untouched. Treat `hotel_bome_workflow` on `main` as canonical; do not delete or reset the older checkout until its changes are separately reviewed.
+
 ## Latest checkpoint — Work-order detail page and CRUD/filter safeguards (2026-10-23)
 
 - Branch `work/hermes-full-build`, HEAD `9fb3239`; preserve pre-existing dirty worktree. No stage/commit/push/live changes. Port 8083 and Flux archive untouched.
