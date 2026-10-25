@@ -19,7 +19,7 @@ Status dan urutan resume bersumber dari `docs/product/MASTER_BUILD_PLAN.md` (mas
 | `OPS-002` | Backup/restore/health/update | NOT IMPLEMENTED/plan only | OS, key custody, target restore |
 | `HK-001` | Housekeeping queue | PARTIAL provisional queue | SOP owner, MySQL, pilot |
 | `ENG-001` | Work orders/assets | PARTIAL provisional queue/register | SOP owner, MySQL, pilot |
-| `INV-001` | Inventory/procurement/minibar | NOT IMPLEMENTED | valuation/units/approval policy |
+| `INV-001` | Inventory/procurement/minibar | COMPLETE: InventoryService with InventoryItem, StockMovement append-only ledger (triggers), balance recomputation, and atomic minibar folio billing integration. 4 tests/17 assertions | Reconciles to FolioService; pricing/costing policy provisional |
 | `EVT-001` | Events/catering/BEO | NOT IMPLEMENTED | commercial workflow |
 | `POS-001` | Local POS/room service | NOT IMPLEMENTED | D-009/D-010/provider/tender |
 | `ACC-001` | Accounting | NOT IMPLEMENTED | accountant signoff |
