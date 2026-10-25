@@ -248,3 +248,49 @@ Dokumentasi vendor dipakai sebagai pola pembanding, bukan persetujuan SOP Hotel 
 - Closing Cashiers: https://docs.oracle.com/en/industries/hospitality/opera-cloud/24.4/ocsuh/t_cashiers_closure.htm
 - Income Audit: https://docs.oracle.com/en/industries/hospitality/opera-cloud/26.3/ocsuh/c_endofday_income_audit.htm
 - Charges Adjustment and Payments: https://docs.oracle.com/en/industries/hospitality/opera-cloud/26.4/ocsuh/c_postings_adjustments_postings_adjustments_and_payments_ch.htm
+
+## Owner clarifications — 2026-10-25
+
+Keputusan berikut merekam arahan produk pemilik. Default industri yang disebut tetap sementara dan dapat direvisi setelah uji konsumen. Catatan ini bukan pendapat hukum, persetujuan pajak, sertifikasi lisensi, atau bukti acceptance perangkat.
+
+### D-007 — Data tamu
+
+- Pemilik menyatakan PMS dipakai hotel yang ditanganinya untuk data tamu nyata, tidak untuk disebarkan, dengan akses operasional yang dimaksudkan bagi resepsionis, supervisor, dan owner.
+- Kebijakan produk yang diminta: data disimpan tanpa batas waktu sebagai default bisnis; penghapusan tidak boleh dilakukan sepihak dan memerlukan persetujuan owner.
+- Implementasi wajib menerapkan akses minimum per properti dan per peran, audit akses/perubahan/persetujuan penghapusan, pencatatan tujuan minimum, pengamanan lokal, redaksi log, dan larangan ekspor/sinkronisasi tanpa persetujuan khusus. Penghapusan tidak boleh berupa operasi massal/hard-delete oleh staff; permintaan koreksi/penghapusan, kewajiban retensi, sengketa, dan pemusnahan harus memiliki alur tertinjau dan jejak audit.
+- **Status:** keputusan pemilik membuka perancangan dan implementasi terbatas atas kebutuhan operasional; bukan bukti bahwa retensi tanpa batas atau pemrosesan data nyata memenuhi hukum. Jangan masukkan data tamu nyata ke lingkungan uji/repo; validasi hukum/privasi dan keputusan retensi per kategori tetap diperlukan sebelum pilot konsumen.
+
+### D-004 — Mata uang, pajak, pembulatan, timezone, invoice
+
+- Mata uang operasional: IDR. Tarif pajak dan metode pembulatan harus dapat diatur manual pada konfigurasi properti, bukan dianggap sama untuk semua hotel; supervisor menjadi penanggung jawab validasi konfigurasi. Sampai konfigurasi disahkan, sistem tidak boleh mengarang tarif pajak.
+- Zona waktu properti: `Asia/Singapore` (UTC+08:00) sebagai default yang diminta. Simpan timestamp teknis dengan konvensi konsisten dan hitung business date menurut timezone properti.
+- Invoice mengikuti praktik invoice hotel umum sebagai baseline desain: identitas properti/invoice, tanggal, referensi stay, rincian layanan, subtotal, pajak/biaya yang terkonfigurasi, total, pembayaran dan saldo. Nomor invoice harus unik serta tidak dipakai ulang; persyaratan pajak lokal/faktur pajak perlu divalidasi per lokasi.
+- **Status:** arahan pemilik tercatat; D-004 operasional tetap provisional sampai supervisor mengonfirmasi tarif/perlakuan pajak dan pembulatan untuk tiap properti. Tidak ada tarif nasional atau format invoice legal yang diasumsikan di sini.
+
+### D-005 — Reservasi dan front desk
+
+- Pemilik meminta alur PMS hotel umum sebagai default, tanpa menunggu keputusan rinci untuk tiap perilaku. Gunakan OPS-D5 dan D-005 baseline di atas sebagai aturan implementasi sementara: reservasi terkonfirmasi, walk-in, group berisi reservasi individual, overbooking mati secara default, check-in ke kamar eligible dan bersih/ready, semua perpindahan/pembatalan/no-show diaudit, dan checkout meninjau saldo.
+- Penalti, penahanan/refund deposit otomatis, checkout dengan saldo terbuka, identitas wajib, serta override tetap memerlukan otorisasi eksplisit; jangan mengarang biaya/ambang.
+- **Status:** cukup untuk melanjutkan slice yang sudah memiliki spec/acceptance; default harus diberi provenance dan bisa direvisi setelah uji konsumen.
+
+### D-010 — Kasir dan tutup hari
+
+- Resepsionis boleh menutup shift kasirnya sendiri dan bertanggung jawab memasukkan jumlah aktual serta selisih. Supervisor bertanggung jawab melakukan validasi/approval atas selisih dan tindakan koreksi berisiko. Terapkan jejak audit; jangan menghapus selisih atau mengubah transaksi posted.
+- Rekonsiliasi dan night audit mengikuti pola PMS hotel umum dengan business date per properti, ringkasan per tender, exception review, dan close/reopen terotorisasi. Nilai toleransi selisih dan cutoff tetap dapat dikonfigurasi setelah kebutuhan pilot; jangan hard-code ambang yang belum diputuskan.
+- **Status:** role intent dari pemilik tercatat; pemetaan final ke role aplikasi dan acceptance supervisor perlu diuji.
+
+### D-006 — Doorlock/RFID
+
+- Pemilik menetapkan kebutuhan RFID, penggunaan oleh resepsionis dengan tap kartu, serta target kompatibilitas Windows 10/11; model reader/lock belum diketahui.
+- **Status BLOCKED_EXTERNAL:** identitas perangkat, protokol/kartu, lisensi dan hak penggunaan SDK, serta reader fisik belum dipastikan. Paket LockSDK lokal dan simulator tidak membuktikan dukungan. Lanjutkan persiapan yang tidak mengakses kartu nyata; jangan menulis/membatalkan kartu produksi atau mengklaim plug-and-play sebelum perangkat uji dipilih dan acceptance lulus.
+
+### D-008 — Release/signing
+
+- Owner menjadi pihak bertanggung jawab atas keputusan rilis; pemilik menyatakan belum ada kebijakan signing/entitlement khusus.
+- Default keselamatan teknis: private signing key tidak boleh berada di repo/aplikasi/log, gunakan penyimpanan terlindungi dan akses owner; signing/rilis produksi memerlukan jejak persetujuan dan recovery plan. Ini rekomendasi kontrol teknis, bukan aturan legal atau persetujuan distribusi lisensi pihak ketiga.
+- **Status BLOCKED_EXTERNAL:** hak redistribusi Flux/SDK dan entitlement belum diverifikasi; belum ada signing custodian/recovery plan formal. Jangan membuat atau mengirim paket produksi bertanda tangan sampai gate ini selesai.
+
+### D-009 — Provider eksternal
+
+- Pemilik meminta opsi provider yang paling mudah sebagai langkah awal; belum menunjuk provider, akun sandbox, atau kontrak.
+- **Status:** riset/komparasi provider dan sandbox dapat dilanjutkan sebagai task independen. Integrasi tetap optional dan disabled-by-default; jangan mengirim transaksi/data nyata atau mengklaim integrasi provider selesai sebelum provider dipilih dan kontrak/sandbox disetujui.

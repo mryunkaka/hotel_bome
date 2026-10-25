@@ -1,6 +1,6 @@
 # Tasks: Rates, Availability, and Reservations
 
-**Readiness**: D-004/D-005 keputusan sementara tercatat 2026-10-25; RATE-001-T01 rate plan CRUD implemented; RATE-001-T02 rate quote service implemented; T04 boundary tests partially done (quote service scope). Guest profile is only a technical prototype; D-007 remains open, so reservation use with real guest data is not approved. Snapshot stability tests in T04 require T03.
+**Readiness**: Owner clarifications for D-004/D-005 are recorded in `docs/product/DECISION_LOG.md` (2026-10-25): IDR; manual per-property tax and rounding settings validated by supervisor; `Asia/Singapore` default; ordinary PMS reservation/front-desk defaults. RATE-001 implementation exists locally; target-DB concurrency and legal/tax acceptance remain open. Guest profile remains prototype: real guest data is not authorized for tests/repository; operational use requires field-specific role/privacy safeguards and legal review.
 
 ## RATE-001 Slice 1 — Rate Plan Master Data
 

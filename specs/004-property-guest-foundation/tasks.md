@@ -1,6 +1,6 @@
 # Tasks: Property Inventory and Guest Privacy
 
-**Depends on**: IAM-001 | **Readiness**: interim property/inventory master CRUD, housekeeping-status events, room blocks and admin room board implemented; target-DB concurrency, hotel-user membership, reservation availability and guest privacy remain open.
+**Depends on**: IAM-001 | **Readiness**: interim property/inventory master CRUD, housekeeping-status events, room blocks and admin room board implemented; target-DB concurrency, hotel-user membership, reservation availability and privacy/legal acceptance remain open. Owner product direction recorded in `docs/product/DECISION_LOG.md` (2026-10-25) permits planning staff access to real guest data under restricted roles; do not use real data in tests, fixtures, or repository. Production use remains gated on field-level safeguards, role tests, and retention/legal review.
 
 - [x] PROP-001-T01a Record reversible property name/code/active-disable defaults in `docs/product/DECISION_LOG.md` (PROP-D1); do not infer tax/timezone/address rules.
 - [x] PROP-001-T01b1 Record reversible outlet/room-type/room identity and disable rules in `docs/product/DECISION_LOG.md` (PROP-D2); do not infer availability or billing semantics.

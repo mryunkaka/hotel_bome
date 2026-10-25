@@ -39,4 +39,4 @@ Property, outlet, room type, room, room status history, room block, guest, guest
 
 ## Dependencies and readiness
 
-D-001 multi-hotel dan IAM-001 design. Property slice **READY for design**; guest PII implementation **BLOCKED:D-007** sampai privacy/consent/retention disetujui.
+D-001 multi-hotel dan IAM-001 design. Property slice **READY for design**. Owner direction for hotel guest-data use, intended staff roles, no unilateral deletion and indefinite business-retention request is recorded in `docs/product/DECISION_LOG.md` (2026-10-25). Fake-data implementation of field-minimized, property/role-scoped access and audit may proceed. Live real-guest use remains **BLOCKED_EXTERNAL** pending legal/privacy review, field-level purpose/basis and retention handling, DSAR/erasure process, and security acceptance. Never use real guest data in tests, fixtures or Git.

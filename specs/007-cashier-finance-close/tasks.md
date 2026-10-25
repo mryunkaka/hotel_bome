@@ -1,6 +1,6 @@
 # Tasks: Folio Payments, Cashier, and Night Audit
 
-**Readiness**: BLOCKED:D-004,D-010.
+**Readiness**: Owner direction recorded 2026-10-25 in `docs/product/DECISION_LOG.md`: IDR; per-property manual tax and rounding settings; receptionist closes own cashier shift and records variance; supervisor validates/approves variance and risky corrections; general PMS reconciliation/night-audit pattern. Tax/legal acceptance, target-DB concurrency and role-specific route acceptance remain open.
 
 - [x] FIN-001-T01 Obtain accountant/owner approval for tax, currency, invoice numbering/snapshot, tender, refund and correction rules. D-004 & D-010 provisional decisions applied per HERMES_AUTONOMOUS_BUILD mandate: IDR integer currency, append-only ledger, compensating reversals/refunds, unique idempotency key, immutable invoice snapshots. Official owner/accountant signoff remains external.
 - [x] FIN-001-T02 Define folio ledger, payment idempotency, reversal and balance invariants. Implemented in FolioService: sum(charges) - sum(payments) = balance; duplicate payment idempotent via unique [property_id, idempotency_key]; charge reversal adds compensating negative record with reversal_of_id; payment refund adds compensating negative record with refund_of_id; SQLite triggers enforce immutability (prevent UPDATE/DELETE on folio_charges and folio_payments).
