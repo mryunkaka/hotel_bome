@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  *
  * @property int $id
  * @property int $property_id
+ * @property int|null $room_type_id
  * @property string $name
  * @property string $code
  * @property int $base_price_per_night

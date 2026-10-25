@@ -9,7 +9,7 @@ Status dan urutan resume bersumber dari `docs/product/MASTER_BUILD_PLAN.md` (mas
 | `IAM-001` | Users/roles/property access | Local routes, query audit, membership/session tests and operator guidance verified (SQLite) | MySQL/Windows/browser, hotel SOP and external acceptance |
 | `PROP-001` | Property/outlet/room/status | PARTIAL CRUD/history; current app-defined tenant boundary/role denial locally verified | MySQL concurrency, browser/device acceptance, room-availability integration and hotel SOP |
 | `GUEST-001` | Guest/privacy/documents | PARTIAL prototype exists (`display_name`, free-text notes); both may contain personal data; operational acceptance BLOCKED:D-007 | Owner/privacy counsel must approve fields including display name/notes, purpose, basis, access, rights, and retention before real guest data is used |
-| `RATE-001` | Rates/tax/availability | PARTIAL: rate plan master CRUD implemented (IDR price, configurable tax, effective dates); quote/availability/booking NOT IMPLEMENTED | D-004 confirmed sementara; rate quote/availability engine, MySQL concurrency |
+| `RATE-001` | Rates/tax/availability | PARTIAL: rate plan master CRUD implemented (IDR price, configurable tax, effective dates); rate quote service implemented (room-type matching, PBJT tax, half-up rounding, nightly breakdown); snapshot/availability/booking NOT IMPLEMENTED | D-004 confirmed sementara; snapshot, availability engine, MySQL concurrency |
 | `RES-001` | Booking/group/walk-in | NOT IMPLEMENTED | D-005 SOP + guest/rate |
 | `FO-001` | Stay lifecycle/front desk | NOT IMPLEMENTED | D-005 + reservation |
 | `FIN-001` | Folio/payments/invoice | NOT IMPLEMENTED | D-004/D-010 |

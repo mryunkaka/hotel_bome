@@ -1,6 +1,6 @@
 # Tasks: Rates, Availability, and Reservations
 
-**Readiness**: D-004/D-005 keputusan sementara tercatat 2026-10-25; RATE-001-T01 rate plan CRUD implemented. Guest profile is only a technical prototype; D-007 remains open, so reservation use with real guest data is not approved. RATE-001-T02 remains the next design task; full quote/availability/reservation acceptance is not complete.
+**Readiness**: D-004/D-005 keputusan sementara tercatat 2026-10-25; RATE-001-T01 rate plan CRUD implemented; RATE-001-T02 rate quote service implemented; T04 boundary tests partially done (quote service scope). Guest profile is only a technical prototype; D-007 remains open, so reservation use with real guest data is not approved. Snapshot stability tests in T04 require T03.
 
 ## RATE-001 Slice 1 — Rate Plan Master Data
 
@@ -10,9 +10,9 @@
 
 ## RATE-001 Slice 2 — Rate Quote and Snapshot (future)
 
-- [ ] RATE-001-T02 Design rate quote service: given property, room type, dates, occupancy → find applicable rate plan, calculate nightly rates, apply tax. Return quote with breakdown. No booking yet.
+- [x] RATE-001-T02 Design and implement rate quote service: `RateQuoteService::quote(property, roomTypeId, checkIn, checkOut)` finds applicable active rate plan (room-type-specific preferred, fallback to general), calculates nightly breakdown, applies PBJT tax with half-up IDR rounding per D-004. Returns structured quote or null. Additive migration adds optional `room_type_id` FK to `rate_plans` with composite property constraint. Evidence: `RateQuoteTest` 14 tests/45 assertions; full suite 241/1154; Pint, PHPStan pass. SQLite only.
 - [ ] RATE-001-T03 Implement rate quote and confirmed-booking snapshot: immutable rate/tax at time of booking. Snapshot must survive rate plan master changes.
-- [ ] RATE-001-T04 Test date/timezone boundaries (IANA per property), tax rounding (half-up to IDR), overlapping rate plans, inactive plan exclusion, snapshot stability after master update.
+- [ ] RATE-001-T04 Test date/timezone boundaries (IANA per property), tax rounding (half-up to IDR), overlapping rate plans, inactive plan exclusion, snapshot stability after master update. **Partial:** RateQuoteTest T04 boundary tests added: effective date inclusive boundaries, one-sided dates, overlapping plan selection, half-up rounding edge, fractional tax %, single-night stay. Snapshot stability requires T03. Evidence: 20 tests/70 assertions in RateQuoteTest; full suite 247/1179. SQLite only.
 
 ## RES-001 — Reservation (future, after rate quote)
 
