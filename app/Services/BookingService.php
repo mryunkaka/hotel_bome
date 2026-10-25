@@ -34,7 +34,7 @@ class BookingService
         ?int $groupId = null,
     ): int {
         return DB::transaction(function () use ($property, $guestId, $roomId, $roomTypeId, $checkIn, $checkOut, $actorId, $source, $groupId): int {
-            $this->guardRoom($roomId, $checkIn, $checkOut);
+            $this->guardRoom($roomId, $checkIn, $checkOut, $property);
 
             $quote = $this->quoteService->quote($property, $roomTypeId, $checkIn, $checkOut);
             $snapshotId = $this->snapshotService->capture($property, $quote);
@@ -58,7 +58,7 @@ class BookingService
         int $actorId,
     ): int {
         return DB::transaction(function () use ($property, $guestId, $roomId, $roomTypeId, $checkIn, $checkOut, $actorId): int {
-            $this->guardRoom($roomId, $checkIn, $checkOut);
+            $this->guardRoom($roomId, $checkIn, $checkOut, $property);
 
             $quote = $this->quoteService->quote($property, $roomTypeId, $checkIn, $checkOut);
             $snapshotId = $this->snapshotService->capture($property, $quote);
@@ -67,11 +67,15 @@ class BookingService
         });
     }
 
-    private function guardRoom(int $roomId, Carbon $checkIn, Carbon $checkOut): void
+    private function guardRoom(int $roomId, Carbon $checkIn, Carbon $checkOut, Property $property): void
     {
         $room = DB::table('rooms')->where('id', $roomId)->first();
         if ($room === null || ! $room->is_active) {
             throw new \DomainException('Room is not active or does not exist.');
+        }
+
+        if ((int) $room->property_id !== $property->id) {
+            throw new \DomainException('Room does not belong to this property.');
         }
 
         if (! $this->availabilityService->isRoomAvailable($roomId, $checkIn, $checkOut)) {
