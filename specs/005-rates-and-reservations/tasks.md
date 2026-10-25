@@ -1,6 +1,6 @@
 # Tasks: Rates, Availability, and Reservations
 
-**Readiness**: D-004 keputusan sementara tercatat 2026-10-25; D-005 keputusan sementara tercatat; GUEST-001-T01a minimum profile done. RATE-001 slice 1 (rate plan CRUD) READY for implementation. Full rate engine dan reservation BLOCKED until concurrency/availability service designed.
+**Readiness**: D-004/D-005 keputusan sementara tercatat 2026-10-25; RATE-001-T01 rate plan CRUD implemented. Guest profile is only a technical prototype; D-007 remains open, so reservation use with real guest data is not approved. RATE-001-T02 remains the next design task; full quote/availability/reservation acceptance is not complete.
 
 ## RATE-001 Slice 1 — Rate Plan Master Data
 

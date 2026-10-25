@@ -7,8 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
- * Minimum operational guest profile — no PII beyond display name.
- * Full PII fields require D-007 owner/privacy approval.
+ * Prototype guest profile. Display names and free-text notes may contain personal data.
+ * D-007 approval is required before operational use with real guest data or added fields.
  *
  * @property int $id
  * @property int $property_id
