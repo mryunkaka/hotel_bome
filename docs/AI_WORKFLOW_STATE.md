@@ -1,24 +1,38 @@
 # Workflow state and Hermes handoff
 
-## Latest active feature — UI-001 appearance controls (2026-10-25)
+## Current progress snapshot — 2026-10-25
+
+- **Overall project phase:** Phase 5, Foundation acceptance — PARTIAL. Planning/reconcile phases 0–3 are complete; Phase 4 IAM local audit is complete with external acceptance gates; core PMS Phase 6 has not started. Source: phase table in `docs/product/MASTER_BUILD_PLAN.md`.
+- **Current feature checkpoint:** UI-001 appearance controls. T001–T005 are complete; T006 is open for authenticated browser review in light, dark, and system-default modes. Do not claim visual acceptance without browser evidence.
+- **OPS-001 status:** app-level first-admin and health slices T03a–T03c are implemented and locally tested. Windows pilot/runtime/signing/network acceptance T01–T02 and T04–T06 remain externally blocked. Continue independent READY work under the owner’s autonomous-build mandate.
+- **Next action for Hermes:** verify the current master queue and feature readiness from the repository; select the next independent READY task. No task is marked IN_PROGRESS by this checkpoint. If the queue and older state entries conflict, reconcile them and update this snapshot before implementation.
+- **Code checkpoint before preparing this continuation prompt:** canonical checkout `/home/saidadam28/workspace/hotel_bome_workflow`, branch `main`, commit `7dfbdf0` (`origin/main`); local Windows checkout was also at `7dfbdf0`. This documentation change may advance `main`; on resume always verify actual HEAD and remote tip. Preserve untracked `docs/product/BASELINE_EVIDENCE.md` and `packages/flux-pro-2.20.1.zip`; preserve local `tmp/` when present.
+- **VPS cleanup/service:** the owner explicitly removed `/home/saidadam28/workspace/hotel_bome`; do not recreate or refer to it as an existing checkout. The workflow checkout is now an independent Git repository. Nginx root is `hotel_bome_workflow/public`, listening on `127.0.0.1:8083`; `/login` and the refreshed Vite CSS returned HTTP 200. This is server setup evidence, not full product acceptance or permission to deploy future code changes automatically.
+- **Verification evidence:** `composer test --no-interaction` on VPS passed 194 tests/979 assertions before the checkout cleanup; local Vite build passed 22 modules. After cleanup, Nginx configuration test passed, `nginx` and `php8.4-fpm` were active, and login/CSS returned HTTP 200. No authenticated visual review was performed.
+
+Keep this snapshot at the top of the file current. Update it after each completed task and before any session stops, with the exact phase, active task, next TODOs, verification evidence, blockers, commit SHA, and a concrete resume action. Do not invent percentages; calculate them only from explicit task status.
+
+This snapshot supersedes older branch, checkout, and handoff instructions in the historical entries below whenever they conflict. All entries below it are historical checkpoints unless explicitly labeled otherwise.
+
+## UI-001 implementation evidence — 2026-10-25
 
 - Owner clarified the visual reference as `D:\Project\hotel-bome` and requested a visible Light/Dark/System default selector plus dark-mode contrast fixes. The reference checkout is read-only; the implementation target remains the Laravel + Livewire + Tailwind + Flux rebuild.
-- Current local `main` is `d86b264`, synchronized with `origin/main`; preserve untracked `docs/product/BASELINE_EVIDENCE.md`, `packages/flux-pro-2.20.1.zip`, and `tmp/`.
+- At initial UI diagnosis, local `main` was `d86b264`; the implementation and follow-up checkpoint were later committed as `7dfbdf0`. Preserve untracked `docs/product/BASELINE_EVIDENCE.md`, `packages/flux-pro-2.20.1.zip`, and local `tmp/`.
 - Root cause evidence for `/admin/users/memberships`: Blade has `dark:bg-amber-950 dark:text-amber-100`, but there is no `public/hot`; the served `public/build/assets/app-aFrivcIn.css` was last written 2026-10-17 and lacks both selectors. The latest membership view source is from 2026-10-24. Existing Settings already has Light/Dark/System controls via Flux; global desktop/mobile menus do not.
 - Added `specs/014-ui-appearance/{spec,plan,tasks,acceptance}.md` and shared `theme-mode-menu` used by desktop/mobile account menus. Flux Light/Dark/System default choices now appear in both; the settings label is “System default”.
 - TDD evidence: the new `AppearanceThemeTest` first failed on the missing menu choices and label, then passed 3 tests/13 assertions after implementation. Full `composer test --no-interaction` passed 194 tests/979 assertions; Pint passed and PHPStan reported 0 errors.
 - Local PHP CLI ran `npm run build` via Node 24.22.1; Vite/Vite Plus passed 22 modules. The refreshed app CSS contains `dark:bg-amber-950` and `dark:text-amber-100`. `/login` references the new hash and the CSS asset returns HTTP 200. `git diff --check` passed.
 - T006 remains open for visual authenticated-browser review (dark/light/system at desktop/mobile); no Windows computer-use connector is available in this session, so do not claim visual acceptance. `public/build` is ignored and must not be staged. User-owned baseline evidence, Flux archive, and `tmp/` remain untouched.
 
-## Latest checkpoint — single mainline consolidation (2026-10-25)
+## Historical checkpoint — single mainline consolidation before VPS cleanup (2026-10-25)
 
 - Owner directs routine work on one active branch, `main`, with tests before direct push. Canonical VPS checkout `/home/saidadam28/workspace/hotel_bome_workflow` is on `main`; local `D:\Project\hotel_new` is synchronized to the same remote commit.
 - The GitHub `main` snapshot already contained the `/setup/first-admin` wizard and the current application/test files. The old VPS `work/hermes-full-build` working tree was compared file-by-file; application code, views, migrations, feature specs, and tests matched `main`. Its two newer documentation lines were corrected and committed.
 - Verification on VPS: `composer test --no-interaction` exit 0, Pint and PHPStan included, PHPUnit 191 tests / 966 assertions using SQLite in-memory. Composer emits PHP 8.4 deprecation notices from system dependencies. This does not cover browser, MySQL, Windows/LAN, SOP, or hardware acceptance.
 - Pushed `09ee3e8` (`docs-sync-verified-mainline-checkpoint`) and `36f692b` (`remove-obsolete-flux-package-artifact`) directly to `origin/main`. The obsolete tracked Flux Pro 2.20.0 archive was removed from the current tree; the owner’s 2.20.1 archive remains local/untracked and was not staged.
-- Existing `/home/saidadam28/workspace/hotel_bome` checkout still has staged Spec Kit/workflow changes and an untracked Flux archive; it was preserved untouched. Treat `hotel_bome_workflow` on `main` as canonical; do not delete or reset the older checkout until its changes are separately reviewed.
+- At that checkpoint, `/home/saidadam28/workspace/hotel_bome` still had staged Spec Kit/workflow changes. The owner later explicitly requested its deletion on 2026-10-25; that checkout is now absent. Treat any later references below to preserving it as historical and superseded.
 
-## Latest checkpoint — Work-order detail page and CRUD/filter safeguards (2026-10-23)
+## Historical checkpoint — Work-order detail page and CRUD/filter safeguards (2026-10-23)
 
 - Branch `work/hermes-full-build`, HEAD `9fb3239`; preserve pre-existing dirty worktree. No stage/commit/push/live changes. Port 8083 and Flux archive untouched.
 - IAM-001-T04/T05b/T06 local scope now recorded complete: app-defined route/query/Volt inventory, active/inactive membership tests, cross-property tests, session revocation, acceptance matrix, and provisional operator guidance. No app export/import/job/API route or property-data Volt action exists in current tree. Target MySQL concurrency/constraints, Windows/browser and owner SOP remain external gates; this is not full production IAM acceptance.
@@ -229,7 +243,7 @@ The historic T04 reference below is retained as audit trail only and is supersed
 - IAM remains incomplete: admin approval/bootstrap UI, membership/tenant enforcement, and audit tasks not implemented. Next: inspect readiness and continue independent foundation slices. Windows/LAN/hardware/signing acceptance stays BLOCKED_EXTERNAL.
 - Worktree also contains user-owned `docs/product/BASELINE_EVIDENCE.md` and `packages/flux-pro-2.20.1.zip`; never stage either. No commit/push recorded in this checkpoint.
 
-## Current unattended run — 2026-10-18
+## Historical unattended run — 2026-10-18
 
 - Checkout `/home/saidadam28/workspace/hotel_bome_workflow`; branch `work/hermes-full-build`, HEAD `0fad6c3`; `git ls-remote origin refs/heads/work/hermes-full-build` returned same SHA. No tracked code changes existed at start. Preserved untracked owner files `docs/product/BASELINE_EVIDENCE.md` and `packages/flux-pro-2.20.1.zip`; neither staged.
 - Runtime ownership check: `bootstrap/cache`, `storage/framework`, `storage/logs` all `saidadam28:saidadam28`, mode 775; `.phpunit.result.cache` owner `saidadam28`, mode 644. `.env` not read.
@@ -239,7 +253,7 @@ The historic T04 reference below is retained as audit trail only and is supersed
 - `git diff --check` initially flagged an extra blank line at EOF in IAM spec; removed. Final check result recorded after rerun. No commit/push this run; planning changes remain local pending final consistency/readiness analysis. External Windows installer, signing and hotel pilot remain BLOCKED_EXTERNAL.
 - Continuation verification: checkout `/home/saidadam28/workspace/hotel_bome_workflow`, branch `work/hermes-full-build`; HEAD and `origin` tip both `0fad6c3bb7ebd4c65df676aa0f7bebc6c079e303` at initial check. Runtime directories remain owned by `saidadam28` mode 775; `.phpunit.result.cache` owned by `saidadam28` mode 644; PHP 8.4.26. `.env` not read. Re-ran `composer test`: exit 0, Pint PASS, PHPStan 0 errors, PHPUnit 36/36 and 90 assertions; Composer emitted PHP 8.4 deprecation notices from system libraries. `git diff --check` exit 0. Reviewed queues 001–010: no implementation task READY; OPS-001 remains gated on target/runtime/signing/pilot; IAM-001 T01b–T06 depend on specific permission mapping and bootstrap. Preserved owner files `docs/product/BASELINE_EVIDENCE.md`, untracked `docs/product/DECISION_LOG.md`, `packages/flux-pro-2.20.1.zip`, and `tmp/`; no commit/push this continuation.
 
-## Repository and branches
+## Historical repository and branch snapshot — superseded 2026-10-25
 
 - Local project: `D:\Project\hotel_new`
 - Remote: `https://github.com/mryunkaka/hotel_bome.git`
@@ -256,7 +270,7 @@ The historic T04 reference below is retained as audit trail only and is supersed
 - First admin is created through a local one-time setup wizard; the wizard is locked permanently after successful creation.
 - UI stack remains Laravel 13, Livewire 4, Tailwind CSS 4 and Flux Pro 2.20.1; do not use Filament.
 
-## Planning package
+## Historical planning package snapshot
 
 - Product requirements, scope: `docs/product/PRD.md`
 - Architecture/domain: `docs/product/ARCHITECTURE.md`, `docs/product/DOMAIN_MODEL.md`
@@ -277,7 +291,7 @@ The historic T04 reference below is retained as audit trail only and is supersed
 - D-010: approval thresholds, tender/cash variances, invoice correction, close/reopen and reporting SOP.
 - Windows target version/runtime/service/signing resources are not yet chosen or verified.
 
-## Active task for Hermes
+## Historical Hermes handoff — DISC-001 only, superseded by owner mandate
 
 Only `DISC-001` read-only baseline evidence is READY. See `specs/001-discovery-baseline/tasks.md` and `acceptance.md`.
 
@@ -300,7 +314,7 @@ The Windows checkout has pre-existing uncommitted changes: `composer.lock`, `pac
 - Ten Spec Kit skills active under `/opt/data/skills/speckit-*`; global Hermes managed integration must not be installed in project metadata.
 - SSH host fingerprint was verified from the VPS console in earlier session. Use configured SSH key auth; never echo credentials.
 
-## Actual verification state
+## Historical verification state — superseded by current progress snapshot
 
 - Initial repository check: branch `chore/spec-kit-workflow`, HEAD `a2ce0c1`, synced with `origin/chore/spec-kit-workflow` at check time.
 - `specify check` local: PASS (CLI available; Codex CLI detected).
