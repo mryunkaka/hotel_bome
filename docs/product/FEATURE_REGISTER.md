@@ -20,7 +20,7 @@ Status dan urutan resume bersumber dari `docs/product/MASTER_BUILD_PLAN.md` (mas
 | `HK-001` | Housekeeping queue | PARTIAL provisional queue | SOP owner, MySQL, pilot |
 | `ENG-001` | Work orders/assets | PARTIAL provisional queue/register | SOP owner, MySQL, pilot |
 | `INV-001` | Inventory/procurement/minibar | COMPLETE: InventoryService with InventoryItem, StockMovement append-only ledger (triggers), balance recomputation, and atomic minibar folio billing integration. 4 tests/17 assertions | Reconciles to FolioService; pricing/costing policy provisional |
-| `EVT-001` | Events/catering/BEO | NOT IMPLEMENTED | commercial workflow |
+| `EVT-001` | Events/catering/BEO | COMPLETE: EventService with EventSpace, EventBooking BEO orders, interval conflict detection, cancellation space release, and banquet folio billing. 6 tests/21 assertions | Reconciles to FolioService; pricing/capacity policy provisional |
 | `POS-001` | Local POS/room service | COMPLETE: PosService with local outlets, order items, direct payment, and idempotent in-house room charge billing to FolioService. 5 tests/17 assertions | Reconciles to FolioService; offline-safe; external provider integration optional |
 | `ACC-001` | Accounting | NOT IMPLEMENTED | accountant signoff |
 | `HW-001` | Doorlock/RFID | NOT IMPLEMENTED | D-006, vendor/license/device |
