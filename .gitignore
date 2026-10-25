@@ -50,3 +50,8 @@ yarn-error.log
 
 # Machine-local Spec Kit integration catalog cache.
 /.specify/integrations/.cache/
+
+# Local commercial packages & hardware lock SDK binaries
+/packages/flux-pro-2.20.1.zip
+/packages/LockSDK130411.zip
+/packages/lock-sdk/
