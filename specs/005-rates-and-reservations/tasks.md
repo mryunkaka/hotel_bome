@@ -1,16 +1,26 @@
 # Tasks: Rates, Availability, and Reservations
 
-**Readiness**: BLOCKED:D-004,D-005 (guest PII also D-007).
+**Readiness**: D-004 keputusan sementara tercatat 2026-10-25; D-005 keputusan sementara tercatat; GUEST-001-T01a minimum profile done. RATE-001 slice 1 (rate plan CRUD) READY for implementation. Full rate engine dan reservation BLOCKED until concurrency/availability service designed.
 
-- [ ] RATE-001-T01 Obtain accountant/owner currency, tax/fee, rounding, occupancy and rate-rule decisions. BLOCKED:D-004.
-- [ ] RATE-001-T02 Model rate effective dates, snapshots, tax basis and availability concurrency invariants.
-- [ ] RATE-001-T03 Implement rate calendar/quote and shared availability calculation after T01-T02.
-- [ ] RATE-001-T04 Test date/timezone boundaries, tax/rounding, blocks, race and snapshot stability.
-- [ ] RES-001-T01 Obtain cancellation/no-show/deposit/waitlist/overbooking/group SOP. BLOCKED:D-005.
-- [ ] RES-001-T02 Model individual/group/walk-in state machine and audit transitions.
-- [ ] RES-001-T03 Implement authorized booking and rooming-list flows after readiness.
-- [ ] RES-001-T04 Test full lifecycle, availability, tenant boundaries and historical changes.
+## RATE-001 Slice 1 — Rate Plan Master Data
+
+- [x] RATE-001-T01a Implement additive migration for `rate_plans` table: property_id FK, name (max 100), code (per-property unique, max 20), base_price_per_night (unsigned integer, IDR), tax_percentage (decimal 5,2, nullable — configurable per D-004), effective_from/effective_until (date, nullable), is_active boolean, timestamps. Audit events in `rate_plan_events` table. No availability/booking logic yet. Evidence: migration, model, controller, views, routes created.
+- [x] RATE-001-T01b Implement RatePlan model, RatePlanController (property-scoped, platform-admin only): list with search/filter, create, edit, deactivate. Views follow existing Flux Pro pattern. Add "Rate Plans" link to property index page. Audit create/update/deactivate events. Evidence: code landed and tested.
+- [x] RATE-001-T01c Write RatePlanTest: auth denial, admin CRUD, validation (name/code/price/tax/dates), cross-property access denied, inactive property rejected, code uniqueness per property, HTML escaping, deactivation retention, audit events recorded, code uppercase normalization. Evidence: `RatePlanTest` 17 tests/70 assertions; full suite 227/1109; Pint, PHPStan pass. SQLite only.
+
+## RATE-001 Slice 2 — Rate Quote and Snapshot (future)
+
+- [ ] RATE-001-T02 Design rate quote service: given property, room type, dates, occupancy → find applicable rate plan, calculate nightly rates, apply tax. Return quote with breakdown. No booking yet.
+- [ ] RATE-001-T03 Implement rate quote and confirmed-booking snapshot: immutable rate/tax at time of booking. Snapshot must survive rate plan master changes.
+- [ ] RATE-001-T04 Test date/timezone boundaries (IANA per property), tax rounding (half-up to IDR), overlapping rate plans, inactive plan exclusion, snapshot stability after master update.
+
+## RES-001 — Reservation (future, after rate quote)
+
+- [ ] RES-001-T01 Implement reservation state machine per D-005: confirmed → checked_in → checked_out; confirmed → cancelled; confirmed → no_show. Walk-in creates confirmed + immediate check-in. Waitlisted is non-confirming queue.
+- [ ] RES-001-T02 Model individual/group reservation with guest link, room assignment, rate snapshot, property scope, and change audit.
+- [ ] RES-001-T03 Implement authorized booking and room assignment flows after rate quote and availability service.
+- [ ] RES-001-T04 Test full lifecycle, concurrent booking, availability, tenant boundaries, historical changes, no-overbooking enforcement.
 
 ## Order
 
-PROP-001 → approved guest fields → D-004 rate design → D-005 reservation rules → implementation/tests. Do not independently invent tax or cancellation behavior.
+RATE-001-T01a → T01b → T01c → RATE-001-T02..T04 → RES-001-T01..T04. Do not implement availability/booking before rate plan CRUD lands.

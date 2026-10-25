@@ -33,6 +33,7 @@
                         <a class="min-h-11 rounded-lg px-3 py-2 text-center text-sm font-medium text-amber-800 hover:bg-amber-50 dark:text-amber-300 dark:hover:bg-zinc-800" href="{{ route('properties.room-types.index', $property) }}">{{ __('Room types') }}</a>
                         <a class="min-h-11 rounded-lg px-3 py-2 text-center text-sm font-medium text-amber-800 hover:bg-amber-50 dark:text-amber-300 dark:hover:bg-zinc-800" href="{{ route('properties.rooms.index', $property) }}">{{ __('Rooms') }}</a>
                         <a class="min-h-11 rounded-lg px-3 py-2 text-center text-sm font-medium text-amber-800 hover:bg-amber-50 dark:text-amber-300 dark:hover:bg-zinc-800" href="{{ route('properties.guests.index', $property) }}">{{ __('Guests') }}</a>
+                        <a class="min-h-11 rounded-lg px-3 py-2 text-center text-sm font-medium text-amber-800 hover:bg-amber-50 dark:text-amber-300 dark:hover:bg-zinc-800" href="{{ route('properties.rate-plans.index', $property) }}">{{ __('Rates') }}</a>
                         <a class="min-h-11 rounded-lg px-3 py-2 text-center text-sm font-medium text-amber-800 hover:bg-amber-50 dark:text-amber-300 dark:hover:bg-zinc-800" href="{{ route('properties.edit', $property) }}">{{ __('Edit') }}</a>
                         @if ($property->is_active)
                             <form class="col-span-2" method="POST" action="{{ route('properties.deactivate', $property) }}">
@@ -71,6 +72,7 @@
                                     <a class="min-h-11 py-2 text-amber-800 underline dark:text-amber-300" href="{{ route('properties.room-types.index', $property) }}">{{ __('Room types') }} <span class="sr-only">{{ $property->name }}</span></a>
                                     <a class="min-h-11 py-2 text-amber-800 underline dark:text-amber-300" href="{{ route('properties.rooms.index', $property) }}">{{ __('Rooms') }} <span class="sr-only">{{ $property->name }}</span></a>
                                     <a class="min-h-11 py-2 text-amber-800 underline dark:text-amber-300" href="{{ route('properties.guests.index', $property) }}">{{ __('Guests') }} <span class="sr-only">{{ $property->name }}</span></a>
+                                    <a class="min-h-11 py-2 text-amber-800 underline dark:text-amber-300" href="{{ route('properties.rate-plans.index', $property) }}">{{ __('Rates') }} <span class="sr-only">{{ $property->name }}</span></a>
                                     <a class="min-h-11 py-2 text-amber-800 underline dark:text-amber-300" href="{{ route('properties.edit', $property) }}">{{ __('Edit') }} <span class="sr-only">{{ $property->name }}</span></a>
                                     @if ($property->is_active)
                                         <form method="POST" action="{{ route('properties.deactivate', $property) }}">

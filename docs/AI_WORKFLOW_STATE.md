@@ -3,13 +3,13 @@
 ## Current progress snapshot — 2026-10-25
 
 - **Overall project phase:** Phase 5, Foundation acceptance — PARTIAL → advancing to Phase 6 Core PMS. D-004 (currency/tax), D-005 (reservation SOP), D-010 (finance controls) keputusan sementara tercatat. GUEST-001-T01a (minimum guest profile) diimplementasikan dan lulus. Phase 6 guest/rate/reservation unlocked untuk slice konservatif.
-- **Current feature checkpoint:** GUEST-001-T01a DONE — property-scoped guest profile (display_name, notes, audit events, cross-property denial, deactivation). `GuestProfileTest` 16 tests/60 assertions; full suite 210 tests/1039 assertions; Pint, PHPStan pass. SQLite only.
+- **Current feature checkpoint:** RATE-001-T01a/b/c DONE — rate plan master CRUD (name, code, IDR price, configurable tax %, effective dates, audit events, cross-property denial, deactivation). `RatePlanTest` 17 tests/70 assertions; full suite 227 tests/1109 assertions; Pint, PHPStan pass. SQLite only.
 - **Decision log additions:** D-004 (IDR, PBJT, pembulatan, timezone, invoice), D-005 (reservation lifecycle, cancellation, no-show, deposit, walk-in, group, overbooking=off, check-in/out), D-010 (business date, cashier shift, night audit, void/reversal, approval limits) — semua keputusan sementara konservatif dengan provenance.
 - **OPS-001 status:** app-level first-admin and health slices T03a–T03c implemented. Windows pilot/runtime/signing remain BLOCKED_EXTERNAL.
 - **UI-001 status:** T001–T005 DONE; T006 visual browser review remains open (no browser connector).
-- **Next action for Hermes:** continue with RATE-001 specification and planning — D-004 sementara sudah tercatat. Atau lanjutkan task READY independen lainnya. GUEST-001-T01 (full PII fields) tetap BLOCKED_EXTERNAL:D-007.
+- **Next action for Hermes:** RATE-001-T02 rate quote service, atau RES-001 reservation state machine — keduanya membutuhkan desain availability service. Alternatif: implementasi timezone per property (D-004) atau perbaikan role-based access untuk guest/rate (front_desk role). GUEST-001-T01 (full PII) tetap BLOCKED_EXTERNAL:D-007.
 - **Code checkpoint:** branch `main`, commit pending (pre-push). Preserve untracked `docs/product/BASELINE_EVIDENCE.md`, `packages/flux-pro-2.20.1.zip`, `tmp/`.
-- **Verification evidence:** `composer test --no-interaction` exit 0 — 210 tests/1039 assertions (SQLite). Pint 108 files, PHPStan 0 errors. Guest focused test: 16/60. No browser visual review performed.
+- **Verification evidence:** `composer test --no-interaction` exit 0 — 227 tests/1109 assertions (SQLite). Pint 110 files, PHPStan 0 errors. Rate focused: 17/70, Guest focused: 16/60. No browser visual review performed.
 - **Blockers:** UI-001-T006 browser visual; OPS-001 Windows/runtime/signer external; GUEST-001-T01 full PII fields D-007; PROP-001-T04b3 MySQL; all downstream pilot/acceptance external.
 - **Resume:** verify HEAD, run full test suite, pick next READY task from master queue (RATE-001 spec/plan or independent improvements).
 

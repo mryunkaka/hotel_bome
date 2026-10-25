@@ -11,6 +11,7 @@ use App\Http\Controllers\Properties\HousekeepingTaskController;
 use App\Http\Controllers\Properties\MyPropertiesController;
 use App\Http\Controllers\Properties\PropertyController;
 use App\Http\Controllers\Properties\PropertyInventoryController;
+use App\Http\Controllers\Properties\RatePlanController;
 use App\Http\Controllers\Properties\WorkOrderController;
 use App\Http\Controllers\Setup\FirstAdminController;
 use App\Http\Controllers\Setup\HealthController;
@@ -58,6 +59,13 @@ Route::middleware(['auth', 'active', 'platform-admin'])->group(function () {
     Route::get('/properties/{property}/guests/{guest}/edit', [GuestController::class, 'edit'])->name('properties.guests.edit');
     Route::put('/properties/{property}/guests/{guest}', [GuestController::class, 'update'])->name('properties.guests.update');
     Route::patch('/properties/{property}/guests/{guest}/deactivate', [GuestController::class, 'deactivate'])->name('properties.guests.deactivate');
+
+    Route::get('/properties/{property}/rate-plans', [RatePlanController::class, 'index'])->name('properties.rate-plans.index');
+    Route::get('/properties/{property}/rate-plans/create', [RatePlanController::class, 'create'])->name('properties.rate-plans.create');
+    Route::post('/properties/{property}/rate-plans', [RatePlanController::class, 'store'])->name('properties.rate-plans.store');
+    Route::get('/properties/{property}/rate-plans/{ratePlan}/edit', [RatePlanController::class, 'edit'])->name('properties.rate-plans.edit');
+    Route::put('/properties/{property}/rate-plans/{ratePlan}', [RatePlanController::class, 'update'])->name('properties.rate-plans.update');
+    Route::patch('/properties/{property}/rate-plans/{ratePlan}/deactivate', [RatePlanController::class, 'deactivate'])->name('properties.rate-plans.deactivate');
 });
 
 Route::middleware(['auth', 'active', 'property-role:housekeeping'])->group(function () {
