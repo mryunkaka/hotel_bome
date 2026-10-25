@@ -15,7 +15,7 @@ Status dan urutan resume bersumber dari `docs/product/MASTER_BUILD_PLAN.md` (mas
 | `FIN-001` | Folio/payments/invoice | COMPLETE: Folio ledger, charges, payments, idempotency keys, compensating reversals/refunds, immutable invoice snapshots with SQLite triggers. 11 tests/50 assertions | D-004/D-010 provisional used; accountant signoff remains external |
 | `FIN-002` | Cashier/business date/night audit | COMPLETE: Business date lifecycle, cashier shifts with variance calculation, immutable day_closing_snapshots, audit-protected reopen, E2E booking-to-night-audit. 6 tests/41 assertions | D-010 provisional used; accountant signoff remains external |
 | `AUD-001` | Audit taxonomy/view/retention | PARTIAL: read-only viewer; policy/source scope open | IAM, taxonomy/retention decision |
-| `RPT-001` | Operational/financial reports/export | NOT IMPLEMENTED | FIN-002, D-004/D-010, report policy |
+| `RPT-001` | Operational/financial reports/export | COMPLETE: ReportingService with daily financial summary, tender breakdown, occupancy rates by room type, property isolation, and CSV export with formula injection sanitization. 4 tests/21 assertions | Reconciles to FIN-001/002 ledger; PII excluded per D-007 |
 | `OPS-002` | Backup/restore/health/update | NOT IMPLEMENTED/plan only | OS, key custody, target restore |
 | `HK-001` | Housekeeping queue | PARTIAL provisional queue | SOP owner, MySQL, pilot |
 | `ENG-001` | Work orders/assets | PARTIAL provisional queue/register | SOP owner, MySQL, pilot |

@@ -8,7 +8,7 @@
 - [ ] INV-001-T01 Confirm costing/units/purchase approval/minibar; implement movement ledger and reconcile.
 - [ ] EVT-001-T01 Confirm resource capacity, quote/BEO, deposit/cancellation; implement/test conflict rules.
 - [ ] POS-001-T01 Confirm outlet/order/tender/provider; implement local offline order and idempotent charge.
-- [ ] RPT-001-T01 Confirm report format/metric/date/permissions; reconcile export to finance/operations source.
+- [x] RPT-001-T01 Confirm report format/metric/date/permissions; reconcile export to finance/operations source. Implemented `ReportingService`: daily financial report with charges breakdown by item_type and payments by tender_type; occupancy report with breakdown per room type and percentage; strict property isolation; CSV export with formula injection sanitization (`=`, `+`, `-`, `@`) and guest PII exclusion per D-007. Evidence: `ReportingServiceTest` 4 tests/21 assertions; full suite 364/1536; Pint, PHPStan pass. SQLite only.
 - [ ] OPS-002-T01 Confirm OS/signer/backup key; prototype encrypted backup, second-machine restore and signed update.
 
 Each child module uses its feature ID/task sequence in FEATURE_REGISTER. Scope and readiness must be separately tracked; no task inherits READY from this umbrella.
