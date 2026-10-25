@@ -42,6 +42,13 @@
                         <flux:text class="mt-1">{{ __('Review and manage active accounts.') }}</flux:text>
                     </a>
                 @else
+                    @if (auth()->user()->hasGuestOwnerAccess())
+                        <a href="{{ route('properties.guests.properties') }}" class="group rounded-2xl border border-zinc-200 bg-white p-5 transition hover:border-emerald-700 hover:shadow-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-800 dark:border-zinc-800 dark:bg-zinc-900">
+                            <flux:icon name="users" class="mb-4 size-6 text-emerald-800 dark:text-emerald-300" />
+                            <flux:heading size="sm">{{ __('Guest management') }}</flux:heading>
+                            <flux:text class="mt-1">{{ __('Review guest profiles and approval requests across properties.') }}</flux:text>
+                        </a>
+                    @endif
                     <a href="{{ route('my.properties.index') }}" class="group rounded-2xl border border-zinc-200 bg-white p-5 transition hover:border-emerald-700 hover:shadow-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-800 dark:border-zinc-800 dark:bg-zinc-900">
                         <flux:icon name="building-office-2" class="mb-4 size-6 text-emerald-800 dark:text-emerald-300" />
                         <flux:heading size="sm">{{ __('My properties') }}</flux:heading>

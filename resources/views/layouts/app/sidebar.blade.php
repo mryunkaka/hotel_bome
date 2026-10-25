@@ -19,6 +19,9 @@
                     <flux:sidebar.item icon="clipboard-document-list" :href="route('admin.audit.index')" :current="request()->routeIs('admin.audit.*')" wire:navigate>{{ __('Audit history') }}</flux:sidebar.item>
                 @else
                     <flux:sidebar.item icon="building-office-2" :href="route('my.properties.index')" :current="request()->routeIs('my.properties.*', 'properties.housekeeping.*')" wire:navigate>{{ __('My properties') }}</flux:sidebar.item>
+                    @if (auth()->user()->hasGuestOwnerAccess())
+                        <flux:sidebar.item icon="users" :href="route('properties.guests.properties')" :current="request()->routeIs('properties.guests.*')" wire:navigate>{{ __('Guest management') }}</flux:sidebar.item>
+                    @endif
                 @endif
                 @if (Route::has('profile.edit'))
                     <flux:sidebar.item icon="cog-6-tooth" :href="route('profile.edit')" :current="request()->routeIs('profile.*')" wire:navigate>{{ __('Settings') }}</flux:sidebar.item>
@@ -49,6 +52,9 @@
                     <flux:menu.item :href="route('admin.audit.index')" icon="clipboard-document-list" wire:navigate>{{ __('Audit history') }}</flux:menu.item>
                 @else
                     <flux:menu.item :href="route('my.properties.index')" icon="building-office-2" wire:navigate>{{ __('My properties') }}</flux:menu.item>
+                    @if (auth()->user()->hasGuestOwnerAccess())
+                        <flux:menu.item :href="route('properties.guests.properties')" icon="users" wire:navigate>{{ __('Guest management') }}</flux:menu.item>
+                    @endif
                 @endif
                 <flux:menu.separator />
                 <x-theme-mode-menu />

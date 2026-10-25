@@ -15,7 +15,7 @@ use Illuminate\View\View;
 class UserMembershipController
 {
     /** @var list<string> */
-    private const ROLES = ['hotel_admin', 'front_desk', 'housekeeping', 'finance', 'operations'];
+    private const ROLES = ['hotel_admin', 'front_desk', 'housekeeping', 'finance', 'operations', 'receptionist', 'supervisor', 'owner'];
 
     public function index(Request $request): View
     {

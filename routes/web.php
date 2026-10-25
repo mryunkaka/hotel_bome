@@ -53,13 +53,6 @@ Route::middleware(['auth', 'active', 'platform-admin'])->group(function () {
     Route::post('/properties/{property}/room-blocks', [PropertyInventoryController::class, 'storeRoomBlock'])->name('properties.room-blocks.store');
     Route::patch('/properties/{property}/rooms/{room}/blocks/{block}/cancel', [PropertyInventoryController::class, 'cancelRoomBlock'])->name('properties.room-blocks.cancel');
 
-    Route::get('/properties/{property}/guests', [GuestController::class, 'index'])->name('properties.guests.index');
-    Route::get('/properties/{property}/guests/create', [GuestController::class, 'create'])->name('properties.guests.create');
-    Route::post('/properties/{property}/guests', [GuestController::class, 'store'])->name('properties.guests.store');
-    Route::get('/properties/{property}/guests/{guest}/edit', [GuestController::class, 'edit'])->name('properties.guests.edit');
-    Route::put('/properties/{property}/guests/{guest}', [GuestController::class, 'update'])->name('properties.guests.update');
-    Route::patch('/properties/{property}/guests/{guest}/deactivate', [GuestController::class, 'deactivate'])->name('properties.guests.deactivate');
-
     Route::get('/properties/{property}/rate-plans', [RatePlanController::class, 'index'])->name('properties.rate-plans.index');
     Route::get('/properties/{property}/rate-plans/create', [RatePlanController::class, 'create'])->name('properties.rate-plans.create');
     Route::post('/properties/{property}/rate-plans', [RatePlanController::class, 'store'])->name('properties.rate-plans.store');
@@ -116,3 +109,30 @@ Route::middleware(['auth', 'active'])->group(function () {
 });
 
 require __DIR__.'/settings.php';
+
+Route::middleware(['auth', 'active'])->group(function (): void {
+    Route::get('/guest-properties', [GuestController::class, 'properties'])->name('properties.guests.properties');
+    Route::middleware('guest-access:view')->group(function (): void {
+        Route::get('/properties/{property}/guests', [GuestController::class, 'index'])->name('properties.guests.index');
+        Route::get('/properties/{property}/guests/{guest}/edit', [GuestController::class, 'edit'])->name('properties.guests.edit');
+    });
+    Route::middleware(['guest-access:activity'])->get('/properties/{property}/guest-activity', [GuestController::class, 'activity'])->name('properties.guests.activity');
+    Route::middleware(['guest-access:report'])->get('/properties/{property}/guest-report', [GuestController::class, 'report'])->name('properties.guests.report');
+    Route::middleware('guest-access:create')->group(function (): void {
+        Route::get('/properties/{property}/guests/create', [GuestController::class, 'create'])->name('properties.guests.create');
+        Route::post('/properties/{property}/guests', [GuestController::class, 'store'])->name('properties.guests.store');
+    });
+    Route::middleware('guest-access:update')->group(function (): void {
+        Route::put('/properties/{property}/guests/{guest}', [GuestController::class, 'update'])->name('properties.guests.update');
+    });
+    Route::middleware('guest-access:deactivate')->group(function (): void {
+        Route::patch('/properties/{property}/guests/{guest}/deactivate', [GuestController::class, 'deactivate'])->name('properties.guests.deactivate');
+    });
+    Route::middleware('guest-access:validate')->group(function (): void {
+        Route::patch('/properties/{property}/guests/{guest}/validate', [GuestController::class, 'validateGuest'])->name('properties.guests.validate');
+    });
+    Route::middleware('guest-access:approve')->group(function (): void {
+        Route::patch('/properties/{property}/guest-deactivation-requests/{requestId}/approve', [GuestController::class, 'approveDeactivation'])->name('properties.guest-deactivation-requests.approve');
+        Route::patch('/properties/{property}/guest-deactivation-requests/{requestId}/reject', [GuestController::class, 'rejectDeactivation'])->name('properties.guest-deactivation-requests.reject');
+    });
+});

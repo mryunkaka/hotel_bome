@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\EnsureGuestAccess;
 use App\Http\Middleware\EnsureLoopbackRequest;
 use App\Http\Middleware\EnsurePlatformAdmin;
 use App\Http\Middleware\EnsurePropertyRole;
@@ -20,6 +21,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'active' => EnsureUserIsActive::class,
             'loopback' => EnsureLoopbackRequest::class,
             'platform-admin' => EnsurePlatformAdmin::class,
+            'guest-access' => EnsureGuestAccess::class,
             'property-role' => EnsurePropertyRole::class,
         ]);
     })

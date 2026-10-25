@@ -14,7 +14,7 @@ use Illuminate\View\View;
 class UserApprovalController
 {
     /** @var list<string> */
-    private const ROLES = ['hotel_admin', 'front_desk', 'housekeeping', 'finance', 'operations'];
+    private const ROLES = ['hotel_admin', 'front_desk', 'housekeeping', 'finance', 'operations', 'receptionist', 'supervisor', 'owner'];
 
     public function index(): View
     {

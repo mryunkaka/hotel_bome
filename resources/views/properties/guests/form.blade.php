@@ -29,6 +29,10 @@
             <flux:input name="display_name" :label="__('Display name')" :value="old('display_name', $guest->display_name)" maxlength="200" required autofocus />
             <flux:textarea name="notes" :label="__('Notes')" maxlength="500" rows="3">{{ old('notes', $guest->notes) }}</flux:textarea>
 
+            @if ($guest->exists && $requiresReason)
+                <flux:input name="reason" :label="__('Reason for change')" :value="old('reason')" maxlength="500" required />
+            @endif
+
             @if (! $guest->is_active && $guest->exists)
                 <flux:callout variant="warning" icon="exclamation-triangle" heading="{{ __('This guest profile is inactive.') }}" />
             @endif

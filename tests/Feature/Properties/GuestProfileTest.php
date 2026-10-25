@@ -33,6 +33,248 @@ class GuestProfileTest extends TestCase
         ])->assertNotFound();
     }
 
+    public function test_receptionist_with_property_membership_can_list_guests(): void
+    {
+        $receptionist = User::factory()->create();
+        $property = Property::factory()->create();
+        DB::table('property_user')->insert([
+            'user_id' => $receptionist->id,
+            'property_id' => $property->id,
+            'role' => 'receptionist',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $this->actingAs($receptionist)
+            ->get("/properties/{$property->id}/guests")
+            ->assertOk();
+    }
+
+    public function test_receptionist_cannot_review_guest_activity_or_reports(): void
+    {
+        $receptionist = User::factory()->create();
+        $property = Property::factory()->create();
+        $this->addMembership($receptionist, $property, 'receptionist');
+
+        $this->actingAs($receptionist)->get("/properties/{$property->id}/guest-activity")->assertNotFound();
+        $this->actingAs($receptionist)->get("/properties/{$property->id}/guest-report")->assertNotFound();
+    }
+
+    public function test_other_property_roles_cannot_access_guest_profiles(): void
+    {
+        $staff = User::factory()->create();
+        $property = Property::factory()->create();
+        $this->addMembership($staff, $property, 'front_desk');
+
+        $this->actingAs($staff)->get("/properties/{$property->id}/guests")->assertNotFound();
+        $this->actingAs($staff)->post("/properties/{$property->id}/guests", [
+            'display_name' => 'Denied Guest',
+        ])->assertNotFound();
+    }
+
+    public function test_owner_can_open_guest_property_selector_and_employee_cannot(): void
+    {
+        $owner = User::factory()->create();
+        $assigned = Property::factory()->create();
+        $other = Property::factory()->create();
+        $inactive = Property::factory()->create(['is_active' => false]);
+        $this->addMembership($owner, $assigned, 'owner');
+
+        $this->actingAs($owner)
+            ->get('/guest-properties')
+            ->assertOk()
+            ->assertSee($assigned->name)
+            ->assertSee($other->name)
+            ->assertDontSee($inactive->name);
+
+        $employee = User::factory()->create();
+        $this->actingAs($employee)->get('/guest-properties')->assertNotFound();
+    }
+
+    public function test_owner_role_can_access_guest_records_across_properties(): void
+    {
+        $owner = User::factory()->create();
+        $assigned = Property::factory()->create();
+        $other = Property::factory()->create();
+        $this->addMembership($owner, $assigned, 'owner');
+        Guest::forceCreate(['property_id' => $other->id, 'display_name' => 'Cross Property Guest', 'is_active' => true]);
+
+        $this->actingAs($owner)
+            ->get("/properties/{$other->id}/guests")
+            ->assertOk()
+            ->assertSee('Cross Property Guest');
+    }
+
+    public function test_receptionist_update_requires_reason_and_audit_redacts_values(): void
+    {
+        $receptionist = User::factory()->create();
+        $property = Property::factory()->create();
+        $this->addMembership($receptionist, $property, 'receptionist');
+        $guest = Guest::forceCreate(['property_id' => $property->id, 'display_name' => 'Before Name', 'notes' => 'Private detail', 'is_active' => true]);
+
+        $this->actingAs($receptionist)->put("/properties/{$property->id}/guests/{$guest->id}", [
+            'display_name' => 'After Name',
+            'notes' => 'Changed private detail',
+        ])->assertSessionHasErrors('reason');
+
+        $this->actingAs($receptionist)->put("/properties/{$property->id}/guests/{$guest->id}", [
+            'display_name' => 'After Name',
+            'notes' => 'Changed private detail',
+            'reason' => 'Corrected spelling',
+        ])->assertRedirect();
+
+        $event = DB::table('guest_events')->where('guest_id', $guest->id)->where('event_type', 'updated')->first();
+        $this->assertSame('Corrected spelling', $event->reason);
+        $this->assertSame(['display_name', 'notes'], json_decode($event->changes, true));
+        $this->assertStringNotContainsString('After Name', $event->changes);
+        $this->assertStringNotContainsString('Changed private detail', $event->changes);
+    }
+
+    public function test_receptionist_deactivation_waits_for_owner_approval(): void
+    {
+        $receptionist = User::factory()->create();
+        $assigned = Property::factory()->create();
+        $owner = User::factory()->create();
+        $ownerProperty = Property::factory()->create();
+        $this->addMembership($receptionist, $assigned, 'receptionist');
+        $this->addMembership($owner, $ownerProperty, 'owner');
+        $guest = Guest::forceCreate(['property_id' => $assigned->id, 'display_name' => 'Approval Guest', 'is_active' => true]);
+
+        $this->actingAs($receptionist)
+            ->patch("/properties/{$assigned->id}/guests/{$guest->id}/deactivate", ['reason' => 'Duplicate profile'])
+            ->assertRedirect();
+
+        $this->assertDatabaseHas('guests', ['id' => $guest->id, 'is_active' => true]);
+        $request = DB::table('guest_deactivation_requests')->where('guest_id', $guest->id)->first();
+        $this->assertNotNull($request);
+        $this->assertSame('pending', $request->status);
+        $this->assertDatabaseHas('guest_events', [
+            'guest_id' => $guest->id,
+            'event_type' => 'deactivation_requested',
+            'reason' => 'Duplicate profile',
+            'actor_id' => $receptionist->id,
+        ]);
+
+        $this->actingAs($owner)
+            ->patch("/properties/{$assigned->id}/guest-deactivation-requests/{$request->id}/approve", ['reason' => 'Approved after review'])
+            ->assertRedirect();
+
+        $this->assertDatabaseHas('guests', ['id' => $guest->id, 'is_active' => false]);
+        $this->assertDatabaseHas('guest_deactivation_requests', [
+            'id' => $request->id,
+            'status' => 'approved',
+            'approver_id' => $owner->id,
+            'decision_reason' => 'Approved after review',
+        ]);
+        $this->assertDatabaseHas('guest_events', [
+            'guest_id' => $guest->id,
+            'event_type' => 'deactivation_approved',
+            'reason' => 'Approved after review',
+            'actor_id' => $owner->id,
+        ]);
+    }
+
+    public function test_supervisor_can_deactivate_with_reason_and_review_guest_activity(): void
+    {
+        $supervisor = User::factory()->create();
+        $property = Property::factory()->create();
+        $this->addMembership($supervisor, $property, 'supervisor');
+        $guest = Guest::forceCreate(['property_id' => $property->id, 'display_name' => 'Review Guest', 'is_active' => true]);
+
+        $this->actingAs($supervisor)
+            ->patch("/properties/{$property->id}/guests/{$guest->id}/deactivate")
+            ->assertSessionHasErrors('reason');
+
+        $this->actingAs($supervisor)
+            ->patch("/properties/{$property->id}/guests/{$guest->id}/deactivate", ['reason' => 'No longer needed'])
+            ->assertRedirect();
+
+        $this->assertDatabaseHas('guests', ['id' => $guest->id, 'is_active' => false]);
+        $this->assertDatabaseHas('guest_events', [
+            'guest_id' => $guest->id,
+            'event_type' => 'deactivated',
+            'reason' => 'No longer needed',
+        ]);
+
+        $this->actingAs($supervisor)->get("/properties/{$property->id}/guests")->assertOk();
+        $this->actingAs($supervisor)->get("/properties/{$property->id}/guest-activity")
+            ->assertOk()
+            ->assertSee('guest_deactivated')
+            ->assertSee('guest_list_viewed');
+        $this->actingAs($supervisor)->get("/properties/{$property->id}/guest-report")->assertOk();
+
+        $validatedGuest = Guest::forceCreate(['property_id' => $property->id, 'display_name' => 'Validated Guest', 'is_active' => true]);
+        $this->actingAs($supervisor)
+            ->patch("/properties/{$property->id}/guests/{$validatedGuest->id}/validate", ['reason' => 'Reviewed required fields'])
+            ->assertRedirect();
+        $this->assertDatabaseHas('guests', ['id' => $validatedGuest->id, 'is_validated' => true]);
+    }
+
+    public function test_receptionist_cannot_use_a_direct_guest_id_from_another_property(): void
+    {
+        $receptionist = User::factory()->create();
+        $assigned = Property::factory()->create();
+        $other = Property::factory()->create();
+        $this->addMembership($receptionist, $assigned, 'receptionist');
+        $guest = Guest::forceCreate(['property_id' => $other->id, 'display_name' => 'Other Hotel Guest', 'is_active' => true]);
+
+        $this->actingAs($receptionist)
+            ->get("/properties/{$assigned->id}/guests/{$guest->id}/edit")
+            ->assertNotFound();
+        $this->actingAs($receptionist)
+            ->put("/properties/{$assigned->id}/guests/{$guest->id}", [
+                'display_name' => 'Changed',
+                'reason' => 'Attempted cross-property update',
+            ])
+            ->assertNotFound();
+        $this->assertDatabaseHas('guests', ['id' => $guest->id, 'display_name' => 'Other Hotel Guest']);
+    }
+
+    public function test_owner_can_reject_deactivation_request_without_deactivating_guest(): void
+    {
+        $receptionist = User::factory()->create();
+        $property = Property::factory()->create();
+        $owner = User::factory()->create();
+        $ownerProperty = Property::factory()->create();
+        $this->addMembership($receptionist, $property, 'receptionist');
+        $this->addMembership($owner, $ownerProperty, 'owner');
+        $guest = Guest::forceCreate(['property_id' => $property->id, 'display_name' => 'Keep Guest', 'is_active' => true]);
+
+        $this->actingAs($receptionist)
+            ->patch("/properties/{$property->id}/guests/{$guest->id}/deactivate", ['reason' => 'Possible duplicate'])
+            ->assertRedirect();
+        $requestId = DB::table('guest_deactivation_requests')->where('guest_id', $guest->id)->value('id');
+
+        $this->actingAs($owner)
+            ->patch("/properties/{$property->id}/guest-deactivation-requests/{$requestId}/reject", ['reason' => 'Record verified'])
+            ->assertRedirect();
+
+        $this->assertDatabaseHas('guests', ['id' => $guest->id, 'is_active' => true]);
+        $this->assertDatabaseHas('guest_deactivation_requests', [
+            'id' => $requestId,
+            'status' => 'rejected',
+            'approver_id' => $owner->id,
+            'decision_reason' => 'Record verified',
+        ]);
+        $this->assertDatabaseHas('guest_events', [
+            'guest_id' => $guest->id,
+            'event_type' => 'deactivation_rejected',
+            'reason' => 'Record verified',
+            'actor_id' => $owner->id,
+        ]);
+    }
+
+    private function addMembership(User $user, Property $property, string $role): void
+    {
+        DB::table('property_user')->insert([
+            'user_id' => $user->id,
+            'property_id' => $property->id,
+            'role' => $role,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+    }
+
     public function test_admin_can_list_guests(): void
     {
         $admin = $this->platformAdmin();
@@ -148,8 +390,7 @@ class GuestProfileTest extends TestCase
             ->first();
         $this->assertNotNull($event);
         $changes = json_decode($event->changes, true);
-        $this->assertSame('Old Name', $changes['display_name']['from']);
-        $this->assertSame('New Name', $changes['display_name']['to']);
+        $this->assertSame(['display_name', 'notes'], $changes);
     }
 
     public function test_admin_can_deactivate_guest(): void
@@ -163,7 +404,7 @@ class GuestProfileTest extends TestCase
         ]);
 
         $this->actingAs($admin)
-            ->patch("/properties/{$property->id}/guests/{$guest->id}/deactivate")
+            ->patch("/properties/{$property->id}/guests/{$guest->id}/deactivate", ['reason' => 'Record is no longer active'])
             ->assertRedirect(route('properties.guests.index', $property));
 
         $this->assertDatabaseHas('guests', [

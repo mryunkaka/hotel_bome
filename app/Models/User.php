@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Laravel\Fortify\Contracts\PasskeyUser;
 use Laravel\Fortify\PasskeyAuthenticatable;
@@ -50,6 +51,16 @@ class User extends Authenticatable implements MustVerifyEmail, PasskeyUser
             'password' => 'hashed',
             'is_platform_admin' => 'boolean',
         ];
+    }
+
+    public function hasGuestOwnerAccess(): bool
+    {
+        return DB::table('property_user')
+            ->join('properties', 'properties.id', '=', 'property_user.property_id')
+            ->where('property_user.user_id', $this->id)
+            ->where('property_user.role', 'owner')
+            ->where('properties.is_active', true)
+            ->exists();
     }
 
     public function canAuthenticate(): bool
