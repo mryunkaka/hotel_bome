@@ -1,12 +1,12 @@
 # Tasks: Front Desk and Stay Lifecycle
 
-**Readiness**: BLOCKED:D-005.
+**Readiness**: D-005 provisional decisions applied per HERMES_AUTONOMOUS_BUILD mandate.
 
 - [x] FO-001-T01 Resolve check-in identity, early/late, room move/share and unpaid checkout policy. D-005 provisional decisions applied: check-in requires confirmed reservation, room ready status deferred to HK integration, check-out triggers handoff signal, room move records old/new with reason. Unpaid checkout exception requires future policy. No owner SOP signoff.
 - [x] FO-001-T02 Model stay/assignment state transitions, locking and audit linkage to reservation/folio. StayService implements check-in (creates stay from confirmed reservation, transitions reservation to checked_in), check-out (marks stay checked_out, transitions reservation), walk-in check-in, room move with history. All operations use DB transactions with lockForUpdate. Immutable stay_events table with SQLite triggers. Evidence: `StayServiceTest` 14 tests/32 assertions; full suite 317/1356; Pint, PHPStan pass. SQLite only.
-- [ ] FO-001-T03 Implement arrivals/in-house/departures and authorized check-in/check-out.
-- [ ] FO-001-T04 Implement room move/share with transactional revalidation and history.
-- [ ] FO-001-T05 Test role/property denial, occupancy race, restart, stay/folio integrity and HK handoff.
-- [ ] FO-001-T06 Run reservation-to-checkout integration case and record evidence.
+- [ ] FO-001-T03 Implement arrivals/in-house/departures and authorized check-in/check-out. Implemented query/action service: arrivals, in-house, departures, occupancy summary, property-scoped; check-in/out delegate to StayService. Authorization remains BLOCKED: permission-matrix.md says front desk has no current route grant; no role grant/authorization enforcement implemented. Tests prove property scope, not role authorization. Evidence: `FrontDeskServiceTest` 11 tests/18 assertions.
+- [x] FO-001-T04 Implement room move/share with transactional revalidation and history. Room move validates target active, same property, not occupied by another in-house stay; history recorded. Room share remains BLOCKED:D-005 (policy unresolved). Evidence: `RoomMoveTest` 5 tests/13 assertions. SQLite only; DB-target concurrency not verified.
+- [ ] FO-001-T05 Test role/property denial, occupancy race, restart, stay/folio integrity and HK handoff. Property denial, sequential occupancy checks, stay/reservation/snapshot linkage, history retention, and checkout event signal tested. Role denial BLOCKED (no front desk permission grant); concurrent race/restart not verified on target DB; actual HK handoff not wired (only stay event signal). Evidence: `FrontDeskIntegrationTest` 10 tests/37 assertions; SQLite only.
+- [x] FO-001-T06 Run reservation-to-checkout integration case and record evidence. End-to-end: book→arrivals→checkIn→inHouse→departures→roomMove→checkOut→occupancyFreed→auditTrail→snapshotImmutable. Walk-in variant: walkInBook→checkInWalkIn→inHouse→checkOut. Evidence: `FrontDeskIntegrationTest` end-to-end scenarios.
 
 Do not manufacture key success or permit checkout exceptions without policy.

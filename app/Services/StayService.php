@@ -199,6 +199,24 @@ class StayService
                 throw new \DomainException('Cannot move room: stay is not in_house.');
             }
 
+            // Revalidate target room
+            $targetRoom = DB::table('rooms')->where('id', $newRoomId)->first();
+            if ($targetRoom === null || ! $targetRoom->is_active) {
+                throw new \DomainException('Target room is not active or does not exist.');
+            }
+            if ((int) $targetRoom->property_id !== $property->id) {
+                throw new \DomainException('Target room does not belong to this property.');
+            }
+
+            // Check target not occupied by another in-house stay
+            $occupied = DB::table('stays')
+                ->where('room_id', $newRoomId)
+                ->where('status', 'in_house')
+                ->exists();
+            if ($occupied) {
+                throw new \DomainException('Target room is currently occupied.');
+            }
+
             $oldRoomId = (int) $stay->room_id;
 
             DB::table('stays')
