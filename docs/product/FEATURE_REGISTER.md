@@ -10,7 +10,7 @@ Status dan urutan resume bersumber dari `docs/product/MASTER_BUILD_PLAN.md` (mas
 | `PROP-001` | Property/outlet/room/status | PARTIAL CRUD/history; current app-defined tenant boundary/role denial locally verified | MySQL concurrency, browser/device acceptance, room-availability integration and hotel SOP |
 | `GUEST-001` | Guest/privacy/documents | PARTIAL prototype exists (`display_name`, free-text notes); both may contain personal data; operational acceptance BLOCKED:D-007 | Owner/privacy counsel must approve fields including display name/notes, purpose, basis, access, rights, and retention before real guest data is used |
 | `RATE-001` | Rates/tax/availability | PARTIAL: rate plan master CRUD, rate quote service (room-type matching, PBJT tax, half-up rounding, nightly breakdown), immutable rate snapshot with triggers; availability/booking NOT IMPLEMENTED | D-005 for booking; MySQL concurrency |
-| `RES-001` | Booking/group/walk-in | NOT IMPLEMENTED | D-005 SOP + guest/rate |
+| `RES-001` | Booking/group/walk-in | PARTIAL: reservation state machine implemented (confirmed/checked_in/checked_out/cancelled/no_show, walk-in, immutable audit); group/availability/overbooking NOT IMPLEMENTED | D-005 provisional used; D-007 for PII; MySQL concurrency |
 | `FO-001` | Stay lifecycle/front desk | NOT IMPLEMENTED | D-005 + reservation |
 | `FIN-001` | Folio/payments/invoice | NOT IMPLEMENTED | D-004/D-010 |
 | `FIN-002` | Cashier/business date/night audit | NOT IMPLEMENTED | D-010 + FIN-001 |
