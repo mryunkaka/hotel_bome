@@ -5,6 +5,7 @@ namespace Tests\Feature\Properties;
 use App\Models\Guest;
 use App\Models\Property;
 use App\Models\User;
+use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
@@ -70,6 +71,25 @@ class GuestProfileTest extends TestCase
         $this->actingAs($staff)->post("/properties/{$property->id}/guests", [
             'display_name' => 'Denied Guest',
         ])->assertNotFound();
+    }
+
+    public function test_non_guest_property_roles_cannot_read_or_create_guest_records(): void
+    {
+        $property = Property::factory()->create();
+
+        foreach (['hotel_admin', 'front_desk', 'finance', 'housekeeping', 'operations'] as $role) {
+            $user = User::factory()->create();
+            $this->addMembership($user, $property, $role);
+
+            $this->actingAs($user)
+                ->get("/properties/{$property->id}/guests")
+                ->assertNotFound();
+            $this->actingAs($user)
+                ->post("/properties/{$property->id}/guests", ['display_name' => 'Denied '.$role])
+                ->assertNotFound();
+        }
+
+        $this->assertDatabaseCount('guests', 0);
     }
 
     public function test_owner_can_open_guest_property_selector_and_employee_cannot(): void
@@ -210,13 +230,27 @@ class GuestProfileTest extends TestCase
         $this->assertDatabaseHas('guests', ['id' => $validatedGuest->id, 'is_validated' => true]);
     }
 
-    public function test_receptionist_cannot_use_a_direct_guest_id_from_another_property(): void
+    public function test_receptionist_cannot_create_guest_for_unassigned_property(): void
+    {
+        $receptionist = User::factory()->create();
+        $assigned = Property::factory()->create();
+        $unassigned = Property::factory()->create();
+        $this->addMembership($receptionist, $assigned, 'receptionist');
+
+        $this->actingAs($receptionist)
+            ->post("/properties/{$unassigned->id}/guests", ['display_name' => 'Unassigned Guest', 'notes' => 'Synthetic'])
+            ->assertNotFound();
+
+        $this->assertDatabaseMissing('guests', ['property_id' => $unassigned->id, 'display_name' => 'Unassigned Guest']);
+    }
+
+    public function test_receptionist_cannot_edit_or_update_direct_guest_id_from_another_property(): void
     {
         $receptionist = User::factory()->create();
         $assigned = Property::factory()->create();
         $other = Property::factory()->create();
         $this->addMembership($receptionist, $assigned, 'receptionist');
-        $guest = Guest::forceCreate(['property_id' => $other->id, 'display_name' => 'Other Hotel Guest', 'is_active' => true]);
+        $guest = Guest::forceCreate(['property_id' => $other->id, 'display_name' => 'Foreign Guest', 'is_active' => true]);
 
         $this->actingAs($receptionist)
             ->get("/properties/{$assigned->id}/guests/{$guest->id}/edit")
@@ -227,7 +261,7 @@ class GuestProfileTest extends TestCase
                 'reason' => 'Attempted cross-property update',
             ])
             ->assertNotFound();
-        $this->assertDatabaseHas('guests', ['id' => $guest->id, 'display_name' => 'Other Hotel Guest']);
+        $this->assertDatabaseHas('guests', ['id' => $guest->id, 'display_name' => 'Foreign Guest']);
     }
 
     public function test_owner_can_reject_deactivation_request_without_deactivating_guest(): void
@@ -245,11 +279,21 @@ class GuestProfileTest extends TestCase
             ->assertRedirect();
         $requestId = DB::table('guest_deactivation_requests')->where('guest_id', $guest->id)->value('id');
 
+        $otherProperty = Property::factory()->create();
+        $this->actingAs($owner)
+            ->patch("/properties/{$otherProperty->id}/guest-deactivation-requests/{$requestId}/approve", ['reason' => 'Wrong property'])
+            ->assertNotFound();
+        $this->assertDatabaseHas('guest_deactivation_requests', ['id' => $requestId, 'status' => 'pending']);
+
         $this->actingAs($owner)
             ->patch("/properties/{$property->id}/guest-deactivation-requests/{$requestId}/reject", ['reason' => 'Record verified'])
             ->assertRedirect();
+        $this->actingAs($owner)
+            ->patch("/properties/{$property->id}/guest-deactivation-requests/{$requestId}/approve", ['reason' => 'Replay'])
+            ->assertNotFound();
 
         $this->assertDatabaseHas('guests', ['id' => $guest->id, 'is_active' => true]);
+        $this->assertDatabaseHas('guest_deactivation_requests', ['id' => $requestId, 'status' => 'rejected']);
         $this->assertDatabaseHas('guest_deactivation_requests', [
             'id' => $requestId,
             'status' => 'rejected',
@@ -262,6 +306,48 @@ class GuestProfileTest extends TestCase
             'reason' => 'Record verified',
             'actor_id' => $owner->id,
         ]);
+    }
+
+    public function test_only_owner_can_decide_pending_deactivation_and_decisions_require_reasons(): void
+    {
+        $receptionist = User::factory()->create();
+        $owner = User::factory()->create();
+        $property = Property::factory()->create();
+        $this->addMembership($receptionist, $property, 'receptionist');
+        $this->addMembership($owner, $property, 'owner');
+        $guest = Guest::forceCreate(['property_id' => $property->id, 'display_name' => 'Pending Guest', 'is_active' => true]);
+
+        $this->actingAs($receptionist)
+            ->patch("/properties/{$property->id}/guests/{$guest->id}/deactivate", ['reason' => 'Needs review'])
+            ->assertRedirect();
+        $requestId = DB::table('guest_deactivation_requests')->where('guest_id', $guest->id)->value('id');
+
+        $this->actingAs($receptionist)
+            ->patch("/properties/{$property->id}/guest-deactivation-requests/{$requestId}/approve", ['reason' => 'Unauthorized'])
+            ->assertNotFound();
+        $this->actingAs($receptionist)
+            ->patch("/properties/{$property->id}/guest-deactivation-requests/{$requestId}/reject", ['reason' => 'Unauthorized'])
+            ->assertNotFound();
+        $this->assertDatabaseHas('guest_deactivation_requests', ['id' => $requestId, 'status' => 'pending']);
+        $this->assertDatabaseHas('guests', ['id' => $guest->id, 'is_active' => true]);
+
+        $this->actingAs($owner)
+            ->patch("/properties/{$property->id}/guest-deactivation-requests/{$requestId}/approve")
+            ->assertSessionHasErrors('reason');
+        $this->assertDatabaseHas('guest_deactivation_requests', ['id' => $requestId, 'status' => 'pending']);
+        $this->assertDatabaseHas('guests', ['id' => $guest->id, 'is_active' => true]);
+    }
+
+    public function test_supervisor_cannot_review_another_property_guest_activity(): void
+    {
+        $supervisor = User::factory()->create();
+        $assigned = Property::factory()->create();
+        $other = Property::factory()->create();
+        $this->addMembership($supervisor, $assigned, 'supervisor');
+
+        $this->actingAs($supervisor)
+            ->get("/properties/{$other->id}/guest-activity")
+            ->assertNotFound();
     }
 
     private function addMembership(User $user, Property $property, string $role): void
@@ -315,6 +401,9 @@ class GuestProfileTest extends TestCase
             ->post("/properties/{$property->id}/guests", [
                 'display_name' => 'New Guest Person',
                 'notes' => 'Some notes',
+                'property_id' => $property->id + 1000,
+                'is_active' => false,
+                'is_validated' => true,
             ])
             ->assertRedirect(route('properties.guests.index', $property));
 
@@ -323,6 +412,7 @@ class GuestProfileTest extends TestCase
             'display_name' => 'New Guest Person',
             'notes' => 'Some notes',
             'is_active' => true,
+            'is_validated' => false,
         ]);
 
         $this->assertDatabaseHas('guest_events', [
@@ -364,6 +454,7 @@ class GuestProfileTest extends TestCase
             'display_name' => 'Old Name',
             'notes' => 'Old notes',
             'is_active' => true,
+            'is_validated' => true,
         ]);
 
         $this->actingAs($admin)
@@ -375,13 +466,19 @@ class GuestProfileTest extends TestCase
             ->put("/properties/{$property->id}/guests/{$guest->id}", [
                 'display_name' => 'New Name',
                 'notes' => 'New notes',
+                'property_id' => $property->id + 1000,
+                'is_active' => false,
+                'is_validated' => true,
             ])
             ->assertRedirect(route('properties.guests.index', $property));
 
         $this->assertDatabaseHas('guests', [
             'id' => $guest->id,
+            'property_id' => $property->id,
             'display_name' => 'New Name',
             'notes' => 'New notes',
+            'is_active' => true,
+            'is_validated' => true,
         ]);
 
         $event = DB::table('guest_events')
@@ -572,6 +669,62 @@ class GuestProfileTest extends TestCase
             ->get('/properties')
             ->assertOk()
             ->assertSee('Guests');
+    }
+
+    public function test_guest_audit_rows_reject_updates_and_deletes(): void
+    {
+        $actor = User::factory()->create();
+        $property = Property::factory()->create();
+        $guest = Guest::forceCreate(['property_id' => $property->id, 'display_name' => 'Audit Guest', 'is_active' => true]);
+        $guestEventId = DB::table('guest_events')->insertGetId([
+            'property_id' => $property->id,
+            'guest_id' => $guest->id,
+            'event_type' => 'created',
+            'changes' => null,
+            'actor_id' => $actor->id,
+            'created_at' => now(),
+        ]);
+        $accessEventId = DB::table('guest_access_events')->insertGetId([
+            'property_id' => $property->id,
+            'actor_id' => $actor->id,
+            'event' => 'guest_list_viewed',
+            'created_at' => now(),
+        ]);
+
+        foreach ([['guest_events', $guestEventId], ['guest_access_events', $accessEventId]] as [$table, $id]) {
+            $original = (array) DB::table($table)->where('id', $id)->first();
+
+            try {
+                DB::table($table)->where('id', $id)->update(
+                    $table === 'guest_events' ? ['event_type' => 'tampered'] : ['event' => 'tampered'],
+                );
+                $this->fail("{$table} accepted UPDATE");
+            } catch (QueryException) {
+                // Database trigger must reject changes to ordinary audit fields.
+            }
+            $this->assertSame($original, (array) DB::table($table)->where('id', $id)->first());
+
+            try {
+                DB::table($table)->where('id', $id)->delete();
+                $this->fail("{$table} accepted DELETE");
+            } catch (QueryException $exception) {
+                $this->assertNotSame('', $exception->getMessage());
+            }
+            $this->assertSame($original, (array) DB::table($table)->where('id', $id)->first());
+        }
+    }
+
+    public function test_guest_export_and_sync_routes_do_not_exist(): void
+    {
+        $guestDataRoutes = collect(app('router')->getRoutes()->getRoutes())
+            ->filter(function ($route): bool {
+                $identifier = strtolower($route->uri().' '.$route->getName());
+
+                return str_contains($identifier, 'guest')
+                    && (str_contains($identifier, 'export') || str_contains($identifier, 'sync'));
+            });
+
+        $this->assertCount(0, $guestDataRoutes);
     }
 
     private function platformAdmin(): User

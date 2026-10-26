@@ -51,6 +51,16 @@ class OutboxSyncTest extends TestCase
         $this->assertSame(101, $payload['reservation_id']);
     }
 
+    public function test_enqueue_rejects_guest_sync_topics_even_without_named_pii_keys(): void
+    {
+        $svc = new OutboxService;
+
+        $this->expectException(\DomainException::class);
+        $this->expectExceptionMessage('Guest data synchronization is disabled');
+
+        $svc->enqueue($this->propertyA, 'guest.profile.updated', ['guest_id' => 50, 'label' => 'Synthetic']);
+    }
+
     public function test_enqueue_rejects_guest_pii_fields_per_d007(): void
     {
         $svc = new OutboxService;

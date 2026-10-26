@@ -46,6 +46,10 @@ class OutboxService
         // Enforce D-007 guest privacy protection: reject payloads with prohibited PII
         $this->guardPiiExclusion($payload);
 
+        if (str_contains(strtolower($topic), 'guest')) {
+            throw new \DomainException('Guest data synchronization is disabled until privacy approval.');
+        }
+
         $uuid = $eventUuid ?? (string) Str::uuid();
 
         return SyncOutbox::create([
