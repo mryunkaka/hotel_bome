@@ -61,6 +61,21 @@ class GuestProfileTest extends TestCase
         $this->actingAs($receptionist)->get("/properties/{$property->id}/guest-report")->assertNotFound();
     }
 
+    public function test_receptionist_cannot_validate_guest_records(): void
+    {
+        $receptionist = User::factory()->create();
+        $property = Property::factory()->create();
+        $this->addMembership($receptionist, $property, 'receptionist');
+        $guest = Guest::forceCreate(['property_id' => $property->id, 'display_name' => 'Unvalidated Guest', 'is_active' => true]);
+
+        $this->actingAs($receptionist)
+            ->patch("/properties/{$property->id}/guests/{$guest->id}/validate", ['reason' => 'Not authorized'])
+            ->assertNotFound();
+
+        $this->assertDatabaseHas('guests', ['id' => $guest->id, 'is_validated' => false]);
+        $this->assertDatabaseMissing('guest_events', ['guest_id' => $guest->id, 'event_type' => 'validated']);
+    }
+
     public function test_other_property_roles_cannot_access_guest_profiles(): void
     {
         $staff = User::factory()->create();
@@ -86,6 +101,27 @@ class GuestProfileTest extends TestCase
                 ->assertNotFound();
             $this->actingAs($user)
                 ->post("/properties/{$property->id}/guests", ['display_name' => 'Denied '.$role])
+                ->assertNotFound();
+            $this->actingAs($user)
+                ->get("/properties/{$property->id}/guest-activity")
+                ->assertNotFound();
+            $this->actingAs($user)
+                ->get("/properties/{$property->id}/guest-report")
+                ->assertNotFound();
+            $this->actingAs($user)
+                ->put("/properties/{$property->id}/guests/1", ['display_name' => 'Denied '.$role, 'reason' => 'Denied'])
+                ->assertNotFound();
+            $this->actingAs($user)
+                ->patch("/properties/{$property->id}/guests/1/deactivate", ['reason' => 'Denied'])
+                ->assertNotFound();
+            $this->actingAs($user)
+                ->patch("/properties/{$property->id}/guests/1/validate", ['reason' => 'Denied'])
+                ->assertNotFound();
+            $this->actingAs($user)
+                ->patch("/properties/{$property->id}/guest-deactivation-requests/1/approve", ['reason' => 'Denied'])
+                ->assertNotFound();
+            $this->actingAs($user)
+                ->patch("/properties/{$property->id}/guest-deactivation-requests/1/reject", ['reason' => 'Denied'])
                 ->assertNotFound();
         }
 
@@ -226,6 +262,33 @@ class GuestProfileTest extends TestCase
             'event_type' => 'deactivation_approved',
             'reason' => 'Approved after review',
             'actor_id' => $owner->id,
+        ]);
+    }
+
+    public function test_supervisor_can_create_and_update_guest_with_reason(): void
+    {
+        $supervisor = User::factory()->create();
+        $property = Property::factory()->create();
+        $this->addMembership($supervisor, $property, 'supervisor');
+
+        $this->actingAs($supervisor)
+            ->post("/properties/{$property->id}/guests", ['display_name' => 'Supervisor Guest'])
+            ->assertRedirect();
+
+        $guest = Guest::query()->where('property_id', $property->id)->where('display_name', 'Supervisor Guest')->firstOrFail();
+        $this->actingAs($supervisor)
+            ->put("/properties/{$property->id}/guests/{$guest->id}", [
+                'display_name' => 'Updated Supervisor Guest',
+                'reason' => 'Corrected synthetic record',
+            ])
+            ->assertRedirect();
+
+        $this->assertDatabaseHas('guests', ['id' => $guest->id, 'display_name' => 'Updated Supervisor Guest']);
+        $this->assertDatabaseHas('guest_events', [
+            'guest_id' => $guest->id,
+            'event_type' => 'updated',
+            'reason' => 'Corrected synthetic record',
+            'actor_id' => $supervisor->id,
         ]);
     }
 
