@@ -125,6 +125,30 @@ class GuestProfileTest extends TestCase
             ->assertSee('Cross Property Guest');
     }
 
+    public function test_guest_creation_ignores_forged_property_and_lifecycle_fields(): void
+    {
+        $receptionist = User::factory()->create();
+        $property = Property::factory()->create();
+        $other = Property::factory()->create();
+        $this->addMembership($receptionist, $property, 'receptionist');
+
+        $this->actingAs($receptionist)
+            ->post("/properties/{$property->id}/guests", [
+                'display_name' => 'Synthetic Guest',
+                'property_id' => $other->id,
+                'is_active' => false,
+                'is_validated' => true,
+            ])
+            ->assertRedirect();
+
+        $guest = Guest::query()->where('display_name', 'Synthetic Guest')->firstOrFail();
+        $this->assertSame(1, Guest::query()->where('display_name', 'Synthetic Guest')->count());
+        $this->assertSame($property->id, $guest->property_id);
+        $this->assertFalse(Guest::query()->where('display_name', 'Synthetic Guest')->where('property_id', $other->id)->exists());
+        $this->assertTrue($guest->is_active);
+        $this->assertFalse($guest->is_validated);
+    }
+
     public function test_receptionist_update_requires_reason_and_audit_redacts_values(): void
     {
         $receptionist = User::factory()->create();
@@ -168,6 +192,12 @@ class GuestProfileTest extends TestCase
         $request = DB::table('guest_deactivation_requests')->where('guest_id', $guest->id)->first();
         $this->assertNotNull($request);
         $this->assertSame('pending', $request->status);
+
+        $this->actingAs($receptionist)
+            ->patch("/properties/{$assigned->id}/guests/{$guest->id}/deactivate", ['reason' => 'Duplicate request'])
+            ->assertSessionHasErrors('reason');
+        $this->assertSame(1, DB::table('guest_deactivation_requests')->where('guest_id', $guest->id)->where('status', 'pending')->count());
+
         $this->assertDatabaseHas('guest_events', [
             'guest_id' => $guest->id,
             'event_type' => 'deactivation_requested',
