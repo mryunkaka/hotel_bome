@@ -55,3 +55,4 @@ yarn-error.log
 /packages/flux-pro-2.20.1.zip
 /packages/LockSDK130411.zip
 /packages/lock-sdk/
+.vitest/
