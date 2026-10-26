@@ -216,6 +216,11 @@ class GuestProfileTest extends TestCase
             'approver_id' => $owner->id,
             'decision_reason' => 'Approved after review',
         ]);
+        $this->actingAs($owner)
+            ->patch("/properties/{$assigned->id}/guest-deactivation-requests/{$request->id}/approve", ['reason' => 'Replay'])
+            ->assertNotFound();
+        $this->assertSame(1, DB::table('guest_events')->where('guest_id', $guest->id)->where('event_type', 'deactivation_approved')->count());
+
         $this->assertDatabaseHas('guest_events', [
             'guest_id' => $guest->id,
             'event_type' => 'deactivation_approved',
