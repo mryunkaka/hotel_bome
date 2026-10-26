@@ -79,6 +79,10 @@
             "@types:check",
             "@php artisan test"
         ],
+        "test:mysql": [
+            "@php artisan config:clear --ansi",
+            "@php vendor/bin/phpunit --configuration=phpunit.mysql.xml"
+        ],
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
             "@php artisan package:discover --ansi"
